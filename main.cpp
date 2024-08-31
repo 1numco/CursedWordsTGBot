@@ -4,34 +4,24 @@
 #include <stdio.h>
 #include <tgbot/tgbot.h>
 #include <iostream>
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 
+#include "queue.hpp"
+#include "test.h"
+#include "server.h"
 
-int main() {
+using namespace std;
 
-    TgBot::Bot bot("7229787403:AAH0DVCx0wUQ-G9lkXYoIllHL0DhmdawEZo");
-    bot.getEvents().onCommand("start", [&bot](TgBot::Message::Ptr message) {
-        bot.getApi().sendMessage(message->chat->id, "Hi!");
-    });
-    bot.getEvents().onAnyMessage([&bot](TgBot::Message::Ptr message) {
-        printf("User wrote %s\n", message->text.c_str());
+// int main(int argc, char **argv) {
+//   ::testing::InitGoogleMock(&argc, argv);
+//   return RUN_ALL_TESTS();
+// }
 
-        if (StringTools::startsWith(message->text, "/start")) {
-            return;
-        }
-        bot.getApi().sendMessage(message->chat->id, "Your message is: " + message->text);
-    });
-    
-    try {
-        printf("Bot username: %s\n", bot.getApi().getMe()->username.c_str());
-        TgBot::TgLongPoll longPoll(bot);
-        while (true) {
-            printf("Long poll started\n");
-            longPoll.start();
-        }
-    } catch (TgBot::TgException& e) {
-        printf("error: %s\n", e.what());
-    }
+int main(int argc, char *argv[]) {
+    Server server;
+    server.start();
 
-
-    return 0;
+  return 0;
 }
+
