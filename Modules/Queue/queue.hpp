@@ -7,12 +7,6 @@
 template <typename T>
 class Queue {
 
-private:
-
-    const size_t limit;
-    std::deque<T> deque;
-    std::mutex m1;
-
 public:
 
     Queue(const size_t limit_ = 100): limit(limit_){
@@ -53,6 +47,11 @@ public:
     ~Queue(){
 
     }
+
+private:
+    const size_t limit;
+    std::deque<T> deque;
+    std::mutex m1;
 };
 
 

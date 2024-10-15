@@ -17,14 +17,10 @@
 
 template <typename T>
 class Server{
-private:
-    std::unique_ptr<TgBot::Bot> bot_;
-    std::shared_ptr<Queue<T>> queue_;
-    std::mutex m_;
-    inline static bool shutdown_requested_ = true;
+
 public:
 
-    Server( std::unique_ptr<TgBot::Bot>&& bot, std::shared_ptr<Queue<T>> queue):bot_(std::move(bot)), queue_(queue){
+    Server( std::unique_ptr<TgBot::Bot> bot, std::shared_ptr<Queue<T>> queue):bot_(std::move(bot)), queue_(queue){
 
         bot_->getEvents().onCommand("start", [&](TgBot::Message::Ptr message) {
             bot_->getApi().sendMessage(message->chat->id, "Hi!");
@@ -77,5 +73,11 @@ public:
     ~Server(){
 
     }
+
+private:
+    std::unique_ptr<TgBot::Bot> bot_;
+    std::shared_ptr<Queue<T>> queue_;
+    std::mutex m_;
+    inline static bool shutdown_requested_ = true;
 };
 
