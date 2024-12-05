@@ -10,7 +10,9 @@ SignalHandler::SignalHandler(std::vector<int> vec_of_signals, std::function<void
         handler_ptr = this;
         for(auto const& signal: vec_of_signals)
             std::signal(signal, invoke);
+
     } else throw std::runtime_error("Fail initialization of handler's pointer\n!");   
+
 }
 
 void SignalHandler::invoke(int signal_){

@@ -6,7 +6,6 @@
 #include "task.hpp"
 #include "queue.hpp"
 
-
 class Worker{
     public:
 

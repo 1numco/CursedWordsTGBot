@@ -12,7 +12,6 @@ public:
     ~ITask() = default;
 };
 
-
 class CursedWordDetectingTask: public ITask{
 public:
     CursedWordDetectingTask(std::string mss, std::string cht, std::string fN, std::string lN, std::int64_t id);
@@ -25,3 +24,5 @@ private:
     std::string lastName;
     std::int64_t id_m;
 };
+
+
