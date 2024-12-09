@@ -1,0 +1,7 @@
+ARG BASE_IMAGE_VERSION
+
+FROM tgbot_base:${BASE_IMAGE_VERSION}
+
+COPY ./ /tgbot
+
+ENTRYPOINT /tgbot/bins/CursedWordsTGBot/CursedWordsTGBot $command_line_arguments
