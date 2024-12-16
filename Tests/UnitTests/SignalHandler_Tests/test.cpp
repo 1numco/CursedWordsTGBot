@@ -1,4 +1,4 @@
-#include "test.h"
+#include "test.hpp"
 
 void SignalHandlerTest::TearDown() {
     
@@ -7,7 +7,7 @@ void SignalHandlerTest::TearDown() {
 void SignalHandlerTest::test_callback() {
     std::unique_lock<std::mutex> lck(mtx);
     callback_counter++;
-    lck.unlock();
+    lck.unlock(); //лучше по производительности
     cv.notify_one();
 }
 

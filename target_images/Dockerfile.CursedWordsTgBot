@@ -1,0 +1,7 @@
+ARG COMMON_IMAGES_VERSION
+
+FROM cwbot_base:${COMMON_IMAGES_VERSION}
+
+COPY ./ /cwbot
+
+ENTRYPOINT /cwbot/bins/CursedWordsTGBot/CursedWordsTGBot $command_line_arguments
