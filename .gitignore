@@ -1,5 +1,6 @@
-tgbot_workspace.code-workspace
+bot_workspace.code-workspace
 token.txt
 /build/
 /bins/
+update-tgbot-version.patch
 

@@ -46,9 +46,9 @@ int main(int argc, char *argv[]) {
                 if (!count++) {
                     server.terminate();
                     worker.terminate();
-                    Logger::getInstance().logInfo(Logger::Levels::Critical, "Recieved second shutdown signal. Exiting!"); 
+                    Logger::getInstance().logInfo(Logger::Levels::Info, "Recieved shutdown signal. Stop polling!");
                 } else {
-                    Logger::getInstance().logInfo(Logger::Levels::Fatal, "Recieved shutdown signal. Stop polling!");
+                    Logger::getInstance().logInfo(Logger::Levels::Critical, "Recieved second shutdown signal. Exiting!");
                     std::exit(EXIT_FAILURE);
                 }
             }
