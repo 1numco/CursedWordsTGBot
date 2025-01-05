@@ -8,6 +8,23 @@ void QueueTest::TearDown() {
 
 }
 
+TEST_F(QueueTest, LimitedSizeOfQueue) {
+    const int size_of_queue = 77;
+    Queue<TestTask> queue_(size_of_queue);
+    
+    const int size_words = 5;
+    const int size_operations = 2000;
+    int pushCount{0};  // Счётчик количества успешных вставок
+    for (int i = 0; i < size_operations; ++i) {
+        auto message = generated_words(size_words);
+        auto name = generated_words(size_words);
+        auto task = std::make_unique<TestTask>(message, name);
+        if((queue_.push(std::move(task))))
+            pushCount++;       
+    }
+    ASSERT_EQ(pushCount, size_of_queue);
+}
+
 TEST_F(QueueTest, NewQueueFront) {
     auto task = queue.take();
     EXPECT_FALSE(task);

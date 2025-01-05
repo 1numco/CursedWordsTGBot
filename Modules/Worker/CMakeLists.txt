@@ -1,6 +1,6 @@
 set(target worker)
 
-add_library(${target} SHARED worker.cpp)
+add_library(${target} STATIC worker.cpp)
 
 target_include_directories( ${target} PUBLIC . )
 

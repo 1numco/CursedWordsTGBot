@@ -7,7 +7,7 @@ void SignalHandlerTest::TearDown() {
 void SignalHandlerTest::test_callback() {
     std::unique_lock<std::mutex> lck(mtx);
     callback_counter++;
-    lck.unlock(); //лучше по производительности
+    lck.unlock();
     cv.notify_one();
 }
 

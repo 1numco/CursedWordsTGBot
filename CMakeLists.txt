@@ -12,16 +12,6 @@ add_subdirectory(CursedWordsTGBot)
 add_subdirectory(Modules)
 add_subdirectory(Tests)
 
-list(APPEND CMAKE_PREFIX_PATH "/home/ivan/tgbot-cpp/")
-
 find_package(TgBot)
 
-find_package(CURL QUIET)
-
-# if (CURL_FOUND)
-
-include_directories("/home/ivan/tgbot-cpp/include/tgbot/")
-
-link_directories("/home/ivan/tgbot-cpp/include/tgbot/")
-
-target_include_directories( ${target} PUBLIC . /home/ivan/tgbot-cpp/include/tgbot/)
+target_include_directories( ${target} PUBLIC .)

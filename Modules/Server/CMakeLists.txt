@@ -8,7 +8,7 @@ find_package(OpenSSL REQUIRED)
 find_package(Boost COMPONENTS system REQUIRED)
 find_package(CURL)
 
-add_library(${target} SHARED server.cpp)
+add_library(${target} STATIC server.cpp)
 
 target_include_directories( ${target} PUBLIC . /usr/local/include ${OPENSSL_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${GTEST_INCLUDE_DIRS})
 
