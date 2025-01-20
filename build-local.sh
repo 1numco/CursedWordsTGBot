@@ -6,7 +6,9 @@ cd $project_directory
 
 mkdir -p build
 cd build
-cmake ..
+: ${TGBOT_CPP_INSTALL_PREFIX:=""}
+
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./build -DTGBOT_CPP_INSTALL_PREFIX=$TGBOT_CPP_INSTALL_PREFIX
 make -j$(nproc)
 
 mkdir -p ../bins/CursedWordsTGBot
