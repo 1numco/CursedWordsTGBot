@@ -1,0 +1,50 @@
+name: TGBot Workflow
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+    types:
+      - opened
+      - synchronize  # Запускать при коммитах в существующие пул-реквесты
+      - reopened     # Запускать при повторном открытии пул-реквеста
+jobs:
+  build:
+    runs-on: ubuntu-latest  # Для Ubuntu, но можно выбрать другие операционные системы
+
+    steps:
+      # Шаг 1: Проверяем исходный код из репозитория
+      - name: Checkout code
+        uses: actions/checkout@v2
+          
+      # Шаг 2: Установка зависимостей (если они есть)
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get upgrade -y
+          sudo apt-get install -y build-essential g++ make cmake libcurl4-openssl-dev libssl-dev libjsoncpp-dev git zlib1g-dev
+          sudo apt-get install -y libboost-system-dev libboost-thread-dev libboost-program-options-dev libboost-test-dev
+          sudo apt-get install -y libgtest-dev
+
+          git clone --depth 1 https://github.com/reo7sp/tgbot-cpp.git
+          cd tgbot-cpp
+
+          cmake . -DCMAKE_INSTALL_PREFIX=./
+          make -j$(nproc)
+          make install
+
+      # Шаг 3: Создаем директорию для сборки
+      - name: Build project
+        run: |
+          mkdir -p build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./ -DTGBOT_CPP_INSTALL_PREFIX=/home/runner/work/CursedWordsTGBot/CursedWordsTGBot/tgbot-cpp
+          make -j$(nproc)
+
+      # Шаг 4: Запуск тестов (если они есть)
+      - name: Run tests
+        run: |
+          cd build
+          ctest --verbose
