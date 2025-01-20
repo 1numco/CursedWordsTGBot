@@ -46,4 +46,5 @@ jobs:
       # Шаг 4: Запуск тестов (если они есть)
       - name: Run tests
         run: |
+          cd build
           ctest --verbose
