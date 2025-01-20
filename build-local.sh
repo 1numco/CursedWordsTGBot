@@ -1,5 +1,4 @@
 #!/bin/bash -e
-
 project_directory=$(dirname "$(readlink -f "$0")")
 
 cd $project_directory
