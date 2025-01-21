@@ -12,8 +12,7 @@ void ReactorResultTest::SetUp() {
 }
 
 void ReactorResultTest::generator(){
-    //std::ifstream inputFile("./messages.txt");
-    std::ifstream inputFile("./Tests/FunctionalTests/Test_of_echo_bot/messages.txt");
+    std::ifstream inputFile("./messages.txt");
     if (!inputFile) {
         std::cerr << "Не удалось открыть файл!" << std::endl;
     }
