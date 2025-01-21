@@ -13,9 +13,12 @@
 #include "queue.hpp"
 #include "task.hpp"
 #include "logger.hpp"
+#include "classificator.hpp"
+#include "reactor.hpp"
+
+class ITask;
 
 class Server{
-    
 public:
     Server(std::unique_ptr<TgBot::Bot> ptr_bot, std::shared_ptr<Queue<ITask>> queue);
     void start();
@@ -23,7 +26,7 @@ public:
     ~Server();
 
 private:
-    std::unique_ptr<TgBot::Bot> ptr_bot_;
+    std::shared_ptr<TgBot::Bot> ptr_bot_;
     std::shared_ptr<Queue<ITask>> queue_;
     std::atomic<bool> shutdown_requested{false};
 };

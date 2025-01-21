@@ -1,6 +1,6 @@
 set(target CursedWordsTGBot)
 
-add_executable(${target} main.cpp)
+add_executable(${target} run_bot.hpp main.cpp)
 
 target_include_directories( ${target} PUBLIC . )
 
