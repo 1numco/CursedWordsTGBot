@@ -12,13 +12,14 @@ void ReactorResultTest::SetUp() {
 }
 
 void ReactorResultTest::generator(){
-    std::ifstream inputFile("./messages.txt");
+    //std::ifstream inputFile("./messages.txt");
+    std::ifstream inputFile("./Tests/FunctionalTests/Test_of_echo_bot/messages.txt");
     if (!inputFile) {
         std::cerr << "Не удалось открыть файл!" << std::endl;
     }
     std::string line;
     while (std::getline(inputFile, line)) {  
-        auto message = t_bot->getApi().sendMessage(chat_id, line);
+        t_bot->getApi().sendMessage(chat_id, line);
         sent_message = line;
         count_sending_messages++;
         std::this_thread::sleep_for(std::chrono::seconds(3));
@@ -37,10 +38,9 @@ void ReactorResultTest::checker(){
     });
     try {
         TgBot::TgLongPoll longPoll( *t_bot);
-        while (count_sending_messages < size_map && elapsed_seconds.count() < limit_time) {
+        while (count_sending_messages < limit_sent_messages && elapsed_seconds.count() < limit_time) {
             longPoll.start();
             elapsed_seconds = std::chrono::steady_clock::now() - last_change_time;
-            std::cout<<"different times: "<<elapsed_seconds.count()<<"\ncount of sending messages: "<<count_sending_messages<<"\n";
         }
     } catch (TgBot::TgException& e) {
         printf("error: %s\n", e.what());

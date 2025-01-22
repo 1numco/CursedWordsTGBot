@@ -32,6 +32,6 @@ private:
     std::shared_ptr<TgBot::Bot> t_bot;
     std::int64_t chat_id;
     std::string sent_message;
-    const size_t size_map = 10;
+    const size_t limit_sent_messages = 10;
     const size_t limit_time = 6;
 };
