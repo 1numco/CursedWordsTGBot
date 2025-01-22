@@ -12,8 +12,7 @@ void ReactorResultTest::SetUp() {
 }
 
 void ReactorResultTest::generator(){
-    //std::ifstream inputFile("./messages.txt");
-    std::ifstream inputFile("./Tests/FunctionalTests/Test_of_echo_bot/messages.txt");
+    std::ifstream inputFile("./messages.txt");
     if (!inputFile) {
         std::cerr << "Не удалось открыть файл!" << std::endl;
     }
@@ -41,6 +40,7 @@ void ReactorResultTest::checker(){
         while (count_sending_messages < limit_sent_messages && elapsed_seconds.count() < limit_time) {
             longPoll.start();
             elapsed_seconds = std::chrono::steady_clock::now() - last_change_time;
+            std::cout<<"different times: "<<elapsed_seconds.count()<<"\ncount of sending messages: "<<count_sending_messages<<"\n";
         }
     } catch (TgBot::TgException& e) {
         printf("error: %s\n", e.what());
