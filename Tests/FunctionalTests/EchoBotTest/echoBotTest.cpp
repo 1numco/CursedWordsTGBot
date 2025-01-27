@@ -35,8 +35,7 @@ void ReactorResultTest::checker(){
             count_recieve_messages++;
             std::lock_guard lg{set_mutex};
             ASSERT_EQ(message_container.count(message->replyToMessage->text), true);
-            last_change_time = std::chrono::steady_clock::now();
-        
+            last_change_time = std::chrono::steady_clock::now(); 
     });
     try {
         TgBot::TgLongPoll longPoll( *t_bot);
@@ -53,12 +52,13 @@ TEST_F(ReactorResultTest, FirstTest) {
 
     std::jthread mainThread{[&](){
         run_bot("7229787403:AAH0DVCx0wUQ-G9lkXYoIllHL0DhmdawEZo");
-    }};  
+    }};    
 
     generator();
     std::this_thread::sleep_for(std::chrono::seconds(3));
 
+    std::raise(SIGINT);
+    
     checker();
 
-    std::raise(SIGINT);
 }
