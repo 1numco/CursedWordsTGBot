@@ -13,7 +13,7 @@
                 return;
             }
             if (!queue_->push(std::make_unique<CursedWordDetectingTask>(std::make_shared<SimpleClassificator>(message->text),
-             std::make_shared<EchoReactor>(ptr_bot_, message->text, message->chat->id, message->messageId, message->from)))){
+             std::make_shared<EchoReactor>(ptr_bot_, message->text, message->chat->id, message->messageId)))){
 
                 Logger::getInstance().logInfo(Logger::Levels::Critical, "Queue is full!"); 
                 std::this_thread::sleep_for (std::chrono::milliseconds(100));

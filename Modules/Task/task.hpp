@@ -16,18 +16,18 @@ public:
 };
 
 
-class CRTask: public ITask{
+class CWTask: public ITask{
 public:
-    CRTask(std::shared_ptr<IClassificator> classificator, std::shared_ptr<IReactor> react);
-    virtual void execute() final;
-    ~CRTask();
+    CWTask(std::shared_ptr<IClassificator> classificator, std::shared_ptr<IReactor> react);
+    void execute() final;
+    ~CWTask();
 protected:
     std::shared_ptr<IClassificator> classificator_; 
     std::shared_ptr<IReactor> reactor_; 
 };
 
 
-class CursedWordDetectingTask: public CRTask{
+class CursedWordDetectingTask: public CWTask{
 public:
     CursedWordDetectingTask(std::shared_ptr<IClassificator> classificator, std::shared_ptr<IReactor> react);
     ~CursedWordDetectingTask();

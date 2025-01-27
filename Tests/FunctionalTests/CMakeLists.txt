@@ -1,1 +1,1 @@
-add_subdirectory(Test_of_echo_bot)
+add_subdirectory(EchoBotTest)

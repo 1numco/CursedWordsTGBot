@@ -16,7 +16,7 @@ public:
 class SimpleClassificator: public IClassificator{
 public:
     SimpleClassificator(const std::string& message);
-    virtual bool check() override;
+    bool check() final;
     ~SimpleClassificator();
 private:
     std::string message_;
