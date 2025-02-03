@@ -17,7 +17,6 @@ CursedWordDetectingTask::CursedWordDetectingTask(std::shared_ptr<IClassificator>
 
 }
 
-
 CursedWordDetectingTask::~CursedWordDetectingTask(){
 
 }
