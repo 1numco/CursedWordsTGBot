@@ -5,7 +5,6 @@
 #include <cstdint>
 #include <iostream>
 #include <string>
-#include "logger.hpp"
 
 class IClassificator{
 public:
@@ -13,7 +12,7 @@ public:
     virtual ~IClassificator() = default;
 };
 
-class SimpleClassificator: public IClassificator{
+class SimpleClassificator final: public IClassificator{
 public:
     SimpleClassificator(const std::string& message);
     bool check() final;
