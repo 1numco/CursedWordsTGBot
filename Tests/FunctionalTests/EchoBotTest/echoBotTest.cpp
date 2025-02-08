@@ -39,7 +39,7 @@ void ReactorResultTest::checker(){
     });
     try {
         TgBot::TgLongPoll longPoll( *t_bot);
-        while (count_recieve_messages <= limit_sent_messages_ && elapsed_seconds.count() < limit_time_in_seconds) {
+        while (count_recieve_messages <= limit_sent_messages_ && elapsed_seconds.count() < limit_time_in_sec) {
             longPoll.start();
             elapsed_seconds = std::chrono::steady_clock::now() - last_change_time;
         }
