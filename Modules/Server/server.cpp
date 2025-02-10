@@ -6,17 +6,18 @@
         ptr_bot_->getEvents().onCommand("start", [&](TgBot::Message::Ptr message) {
             ptr_bot_->getApi().sendMessage(message->chat->id, "Hi!");
         });
-
+       
         ptr_bot_->getEvents().onAnyMessage([&](TgBot::Message::Ptr message) {
 
             if (StringTools::startsWith(message->text, "/start")) {
                 return;
             }
-            if (!queue_->push(std::make_unique<CursedWordDetectingTask>(message->text, message->chat->title, message->from->firstName, message->from->lastName, message->from->id))){
+            if (!queue_->push(std::make_unique<CursedWordDetectingTask>(std::make_shared<SimpleClassificator>(message->text),
+             std::make_shared<EchoReactor>(ptr_bot_, message->text, message->chat->id, message->messageId)))){
+
                 Logger::getInstance().logInfo(Logger::Levels::Critical, "Queue is full!"); 
                 std::this_thread::sleep_for (std::chrono::milliseconds(100));
             }
-            ptr_bot_->getApi().sendMessage(message->chat->id, "Your message is: " + message->text);
         });
     }
 
