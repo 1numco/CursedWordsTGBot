@@ -1,0 +1,32 @@
+services:
+  grpc_server:
+    image: ${DOCKER_USERNAME}/grpc_server:${COMMON_IMAGES_VERSION}
+    ports:
+      - "50051:50051"
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD-SHELL", "grpc_health_probe -addr=:50051 || exit 1"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
+
+  test_runner:
+    image: ${DOCKER_USERNAME}/cwbot:${TARGET_IMAGES_VERSION}
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - GRPC_SERVER_ADDRESS=grpc_server:50051
+      - MESSAGES_FILE_PATH=/cwbot/bins/Tests/FunctionalTests/Reactor_Tests/messages.txt
+    depends_on:
+      grpc_server:
+        condition: service_healthy
+    entrypoint: []
+    command: /cwbot/bins/Tests/FunctionalTests/Reactor_Tests/reactor_tests
+    networks:
+      - app_network
+    restart: "no"
+
+networks:
+  app_network:
+    driver: bridge
