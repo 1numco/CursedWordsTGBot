@@ -1,50 +1,46 @@
-name: TGBot Workflow
+name: CursedWords Bot CI/CD
+
 on:
   push:
-    branches:
-      - '**'
+    branches: ["**"]
   pull_request:
-    branches:
-      - '**'
-    types:
-      - opened
-      - synchronize  # Запускать при коммитах в существующие пул-реквесты
-      - reopened     # Запускать при повторном открытии пул-реквеста
+    branches: ["**"]
+
 jobs:
-  build:
-    runs-on: ubuntu-latest  # Для Ubuntu, но можно выбрать другие операционные системы
+  build-and-test:
+    runs-on: ubuntu-latest
+    container:
+      image: docker.io/jonnyrembo/cwbot_base:1.0
+      env:
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        COMMON_IMAGES_VERSION: "1.0"
+        TARGET_IMAGES_VERSION: "1.0"
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+        - ${{ github.workspace }}:/repo
+      options: --privileged
 
     steps:
-      # Шаг 1: Проверяем исходный код из репозитория
       - name: Checkout code
-        uses: actions/checkout@v2
-          
-      # Шаг 2: Установка зависимостей (если они есть)
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get upgrade -y
-          sudo apt-get install -y build-essential g++ make cmake libcurl4-openssl-dev libssl-dev libjsoncpp-dev git zlib1g-dev
-          sudo apt-get install -y libboost-system-dev libboost-thread-dev libboost-program-options-dev libboost-test-dev
-          sudo apt-get install -y libgtest-dev
+        uses: actions/checkout@v3
 
-          git clone --depth 1 https://github.com/reo7sp/tgbot-cpp.git
-          cd tgbot-cpp
+      - name: Setup Docker (inside container)
+        uses: docker/setup-buildx-action@v2
 
-          cmake . -DCMAKE_INSTALL_PREFIX=./
-          make -j$(nproc)
-          make install
-
-      # Шаг 3: Создаем директорию для сборки
       - name: Build project
         run: |
-          mkdir -p build
-          cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./ -DTGBOT_CPP_INSTALL_PREFIX=/home/runner/work/CursedWordsTGBot/CursedWordsTGBot/tgbot-cpp
-          make -j$(nproc)
+          cd /repo
+          ./build-local.sh
 
-      # Шаг 4: Запуск тестов (если они есть)
-      - name: Run tests
+      - name: Run all unit tests
         run: |
-          cd build
-          ctest --verbose
+          cd /repo/build
+          ctest --output-on-failure --verbose;
+
+      - name: Start infrastructure and run functional tests
+        run: |
+          cd /repo
+          ./functional_tests_enviroment.sh up
+          ./docker-compose-run-tests.sh
+          ./functional_tests_enviroment.sh down
