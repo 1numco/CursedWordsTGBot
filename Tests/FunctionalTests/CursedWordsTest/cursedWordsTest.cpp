@@ -45,6 +45,7 @@ void ReactorResultTest::checker() {
 
     t_bot->getEvents().onAnyMessage([&](TgBot::Message::Ptr message) {
 
+        std::cout << "message before : " << message->replyToMessage->text << "\n";
         if (message->replyToMessage && message_container.count(message->replyToMessage->text)) {
             bool react_m = (message->text == "мат!");
             std::cout << "message: [" << message->replyToMessage->text << "]\n";
