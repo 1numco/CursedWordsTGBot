@@ -47,10 +47,9 @@ void ReactorResultTest::checker() {
 
         if (message->replyToMessage && message_container.count(message->replyToMessage->text)) {
             bool react_m = (message->text == "мат!");
-            std::cout << "reply to: [" << message->replyToMessage->text << "]\n";
+            std::cout << "message: [" << message->replyToMessage->text << "]\n";
             std::cout << "reply is: [" << message->text << "]\n";
-            std::cout << "react_m : [" << react_m << "]\n";
-            std::cout << "message_container["<< message->replyToMessage->text<<"]"<< message_container[message->replyToMessage->text]<<"\n";
+            std::cout << "message_container["<< message->replyToMessage->text<<"] = "<< ( message_container[message->replyToMessage->text] ? "мат": "не мат" )<<"\n";
             ASSERT_EQ(message_container[message->replyToMessage->text], react_m);
             count_recieve_messages++;
             last_change_time = std::chrono::steady_clock::now();
