@@ -12,8 +12,8 @@ jobs:
     container:
       image: docker.io/jonnyrembo/cwbot_base:1.0
       env:
-        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        TELEGRAM_BOT_TOKEN: "-token 7763682966:AAEFBGifblSqB5of8cyS5WKjC6kK6pxTIuY"
+        DOCKER_USERNAME: "jonnyrembo"
         COMMON_IMAGES_VERSION: "1.0"
         TARGET_IMAGES_VERSION: "1.0"
       volumes:
