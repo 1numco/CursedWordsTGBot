@@ -13,9 +13,9 @@ find_package(Boost COMPONENTS system REQUIRED)
 find_package(CURL REQUIRED)
 
 include(cmake/TgBot.cmake)
-
-enable_testing() 
+enable_testing()
 
 add_subdirectory(CursedWordsTGBot)
 add_subdirectory(Modules)
 add_subdirectory(Tests)
+add_subdirectory(grpcClientLibrary)

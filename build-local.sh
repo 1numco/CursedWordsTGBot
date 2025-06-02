@@ -6,9 +6,10 @@ cd $project_directory
 
 mkdir -p build
 cd build
-
+# cmake ..
 : ${TGBOT_CPP_INSTALL_PREFIX:=""}
 
+# Запуск cmake с использованием переменной BASE_PATH
 cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./build -DTGBOT_CPP_INSTALL_PREFIX=$TGBOT_CPP_INSTALL_PREFIX
 make -j$(nproc)
 
@@ -17,10 +18,13 @@ mkdir -p ../bins/Tests/UnitTests/Queue_Tests
 mkdir -p ../bins/Tests/UnitTests/Parser_Tests
 mkdir -p ../bins/Tests/UnitTests/SignalHandler_Tests
 mkdir -p ../bins/Tests/FunctionalTests/EchoBotTest
+mkdir -p ../bins/Tests/FunctionalTests/CursedWordsTest
 
 cp ./CursedWordsTGBot/CursedWordsTGBot* ../bins/CursedWordsTGBot/
 cp ./Tests/UnitTests/Queue_Tests/queue_tests* ../bins/Tests/UnitTests/Queue_Tests/
 cp ./Tests/UnitTests/Parser_Tests/parser_tests* ../bins/Tests/UnitTests/Parser_Tests/
 cp ./Tests/UnitTests/SignalHandler_Tests/signalhandler_tests* ../bins/Tests/UnitTests/SignalHandler_Tests/
 cp ./Tests/FunctionalTests/EchoBotTest/echoBotTest* ../bins/Tests/FunctionalTests/EchoBotTest/
+cp ./Tests/FunctionalTests/CursedWordsTest/cursedWordsTest* ../bins/Tests/FunctionalTests/CursedWordsTest/
 cp ./Tests/FunctionalTests/EchoBotTest/messages.txt ../bins/Tests/FunctionalTests/EchoBotTest/
+cp ./Tests/FunctionalTests/CursedWordsTest/messages.txt ../bins/Tests/FunctionalTests/CursedWordsTest/

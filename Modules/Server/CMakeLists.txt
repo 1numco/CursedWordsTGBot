@@ -1,3 +1,4 @@
+
 set(target server_bot)
 
 add_library(${target} STATIC server.cpp)

@@ -5,15 +5,22 @@ void ReactorResultTest::TearDown() {
 }
 
 void ReactorResultTest::SetUp() {
-    std::string token = "7389966079:AAHXCquKT0JaQUqHRzac8MMsXMCUUd5uvXQ";
+    std::string token = "7212434431:AAFLuR1mQTqpageO7x575hkQzW7DzJTXdNs";
     t_bot = std::make_shared<TgBot::Bot>(token);
     count_recieve_messages = 0;
     chat_id_ = -1002432345513;
 }
 
 void ReactorResultTest::generator(){
-    std::ifstream inputFile("./messages.txt");
+    const char* filePath = std::getenv("MESSAGES_FILE_PATH");
+    if (!filePath) {
+        std::cout<<"in filePath\n";
+        filePath = "./bins/Tests/FunctionalTests/EchoBotTest/messages.txt";  // По умолчанию для локальной машины
+    }
+    std::ifstream inputFile(filePath);
+    
     if (!inputFile) {
+        std::cout<<"error open filePath\n";
         std::cerr << "Не удалось открыть файл!" << std::endl;
     }
     std::string line;
@@ -21,8 +28,14 @@ void ReactorResultTest::generator(){
         {
             std::lock_guard lg{set_mutex};
             message_container.insert(line);
+
         }
-        t_bot->getApi().sendMessage(chat_id_, line);
+        try {
+            t_bot->getApi().sendMessage(chat_id_, line);
+        } catch (const TgBot::TgException& e) {
+            std::cerr << "Ошибка отправки: " << e.what() << std::endl;
+            continue; // Пропустить ошибку и продолжить цикл
+        }
     }
     inputFile.close();
 }
@@ -51,10 +64,11 @@ void ReactorResultTest::checker(){
 TEST_F(ReactorResultTest, FirstTest) {
 
     std::jthread mainThread{[&](){
-        run_bot("7229787403:AAH0DVCx0wUQ-G9lkXYoIllHL0DhmdawEZo");
+        run_bot("7763682966:AAEFBGifblSqB5of8cyS5WKjC6kK6pxTIuY");
     }};    
 
     generator();
+
     std::this_thread::sleep_for(std::chrono::seconds(3));
 
     std::raise(SIGINT);

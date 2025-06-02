@@ -1,1 +1,2 @@
 add_subdirectory(EchoBotTest)
+add_subdirectory(CursedWordsTest)

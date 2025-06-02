@@ -1,5 +1,7 @@
 set(target reactor)
 
+set(Boost_USE_MULTITHREADED ON)
+
 add_library(${target} STATIC reactor.cpp)
 
 target_include_directories( ${target} PUBLIC . ${TgBot_include_DIR} ${OPENSSL_INCLUDE_DIR} ${Boost_INCLUDE_DIR} ${GTEST_INCLUDE_DIRS})

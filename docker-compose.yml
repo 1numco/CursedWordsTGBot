@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   grpc_server:
     image: ${DOCKER_USERNAME}/grpc_server:${COMMON_IMAGES_VERSION}
@@ -11,21 +13,33 @@ services:
       timeout: 5s
       retries: 15
       start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
 
   test_runner:
-    image: ${DOCKER_USERNAME}/cwbot:${TARGET_IMAGES_VERSION}
+    image: ${DOCKER_USERNAME}/cwbot_base:${COMMON_IMAGES_VERSION}
+    entrypoint: []  # Явный сброс entrypoint
     environment:
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - GRPC_SERVER_ADDRESS=grpc_server:50051
-      - MESSAGES_FILE_PATH=/cwbot/bins/Tests/FunctionalTests/Reactor_Tests/messages.txt
+      - MESSAGES_FILE_PATH=./bins/Tests/FunctionalTests/CursedWordsTest/messages.txt
+      - SOURCE_DIR=${SOURCE_DIR}
     depends_on:
       grpc_server:
         condition: service_healthy
-    entrypoint: []
-    command: /cwbot/bins/Tests/FunctionalTests/Reactor_Tests/reactor_tests
+    volumes:
+    - ${SOURCE_DIR}:/app:cached  # Явно указываем режим монтирования
+    working_dir: /app
+    command:
+    - /bin/bash
+    - -c
+    - |
+      /app/bins/Tests/FunctionalTests/CursedWordsTest/cursedWordsTest
     networks:
       - app_network
-    restart: "no"
 
 networks:
   app_network:

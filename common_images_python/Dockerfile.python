@@ -36,6 +36,8 @@ AutoModelForSequenceClassification.from_pretrained('s-nlp/russian_toxicity_class
 # Копируем файлы сервера
 COPY server_grpc/toxicity_classifier_pb2.py .
 COPY server_grpc/toxicity_classifier_pb2_grpc.py .
+COPY server_grpc/generated .
+COPY server_grpc/proto .
 COPY server_grpc/server.py .
 
 ENV GRPC_HEALTH_CHECK_SERVICE=""

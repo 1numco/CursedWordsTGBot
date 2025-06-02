@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdlib>
+#include <stdio.h> 
 #include <deque>
 #include <string>
 #include <stdio.h>

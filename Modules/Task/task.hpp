@@ -16,20 +16,19 @@ public:
 };
 
 
-class BaseMessageProcessingBotTask: public ITask{
+class CRTask: public ITask{
 public:
-    BaseMessageProcessingBotTask(std::shared_ptr<IClassificator> classificator, std::shared_ptr<IReactor> react);
-    void execute() final;
-    ~BaseMessageProcessingBotTask();
+    CRTask(std::shared_ptr<IClassificator> classificator, std::shared_ptr<IReactor> react);
+    virtual void execute() final;
+    ~CRTask();
 protected:
     std::shared_ptr<IClassificator> classificator_; 
     std::shared_ptr<IReactor> reactor_; 
 };
 
 
-class CursedWordDetectingTask: public BaseMessageProcessingBotTask{
+class CursedWordDetectingTask: public CRTask{
 public:
     CursedWordDetectingTask(std::shared_ptr<IClassificator> classificator, std::shared_ptr<IReactor> react);
     ~CursedWordDetectingTask();
-
 };
