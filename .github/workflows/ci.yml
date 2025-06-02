@@ -38,6 +38,6 @@ jobs:
 
       - name: Start infrastructure and run functional tests
         run: |
-          docker-compose -f docker-compose.yml up -d
-          docker-compose -f docker-compose.yml run --rm test_runner
-          docker-compose -f docker-compose.yml down
+          ./functional_tests_enviroment.sh up
+          ./docker-compose-run-tests.sh
+          ./functional_tests_enviroment.sh down
