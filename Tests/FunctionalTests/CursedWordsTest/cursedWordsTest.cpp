@@ -35,6 +35,7 @@ void ReactorResultTest::generator(){
         message_container[line] = flag;
         
         t_bot->getApi().sendMessage(chat_id_, line);
+        std::this_thread::sleep_for(std::chrono::milliseconds(500)); 
     }
     inputFile.close();
 }
@@ -89,7 +90,7 @@ TEST_F(ReactorResultTest, FirstTest) {
     }};    
 
     generator();
-    std::this_thread::sleep_for(std::chrono::seconds(3));
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 
     std::raise(SIGINT);
     checker();

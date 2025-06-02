@@ -40,7 +40,7 @@ private:
     std::shared_ptr<TgBot::Bot> t_bot;
     std::int64_t chat_id_;
     const size_t limit_sent_messages_ = 5;
-    const size_t limit_time_in_sec = 8;
+    const size_t limit_time_in_sec = 12;
     std::map<std::string, bool> message_container;
     std::mutex set_mutex;
 };
