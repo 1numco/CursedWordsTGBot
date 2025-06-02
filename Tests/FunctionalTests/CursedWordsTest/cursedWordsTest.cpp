@@ -35,7 +35,6 @@ void ReactorResultTest::generator(){
         message_container[line] = flag;
         
         t_bot->getApi().sendMessage(chat_id_, line);
-        std::this_thread::sleep_for(std::chrono::milliseconds(500)); 
     }
     inputFile.close();
 }
@@ -46,18 +45,14 @@ void ReactorResultTest::checker() {
 
     t_bot->getEvents().onAnyMessage([&](TgBot::Message::Ptr message) {
 
-
         if (message->replyToMessage && message_container.count(message->replyToMessage->text)) {
             bool react_m = (message->text == "мат!");
             std::cout << "reply to: [" << message->replyToMessage->text << "]\n";
             std::cout << "reply is: [" << message->text << "]\n";
             std::cout << "react_m : [" << react_m << "]\n";
-            std::cout << "message_container[message->replyToMessage->text] : [" << message_container[message->replyToMessage->text] << "]\n";
+            std::cout << "message_container["<< message->replyToMessage->text<<"]"<< message_container[message->replyToMessage->text]<<"\n";
             ASSERT_EQ(message_container[message->replyToMessage->text], react_m);
-
             count_recieve_messages++;
-            std::cout << "VALID reply count: " << count_recieve_messages << "\n";
-
             last_change_time = std::chrono::steady_clock::now();
         } else {
             std::cout << "Ignored unrelated message: " << message->text << "\n";
@@ -68,15 +63,8 @@ void ReactorResultTest::checker() {
         TgBot::TgLongPoll longPoll(*t_bot, 1);
 
         while (count_recieve_messages < limit_sent_messages_ && elapsed_seconds.count() < limit_time_in_sec) {
-
             longPoll.start();
-
             elapsed_seconds = std::chrono::steady_clock::now() - last_change_time;
-            std::cout << "elapsed: " << elapsed_seconds.count() << "\n";
-
-            if (count_recieve_messages >= limit_sent_messages_ ||  elapsed_seconds.count() >= limit_time_in_sec) {
-                break;
-            }
         }
     } catch (TgBot::TgException& e) {
         std::cerr << "error: " << e.what() << "\n";
@@ -90,7 +78,7 @@ TEST_F(ReactorResultTest, FirstTest) {
     }};    
 
     generator();
-    std::this_thread::sleep_for(std::chrono::seconds(5));
+    std::this_thread::sleep_for(std::chrono::seconds(2));
 
     std::raise(SIGINT);
     checker();
