@@ -19,7 +19,7 @@ jobs:
           TELEGRAM_TOKEN_GENERATOR: 7913850529:AAHRcgeMjun-7U0mWsh5TF2NPUE8WyLGkLU
           TELEGRAM_TOKEN_CHECKER: 7212434431:AAFLuR1mQTqpageO7x575hkQzW7DzJTXdNs
 
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_USERNAME: "jonnyrembo"
           COMMON_IMAGES_VERSION: "1.0"
           SOURCE_DIR: ${{ github.workspace }}
       volumes:
