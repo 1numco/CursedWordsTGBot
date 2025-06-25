@@ -25,3 +25,15 @@ float ToxicityClassifierClient::ClassifyMessage(const std::string& message) {
       return -1;
     }
 }
+
+ToxicityClassifierClientFactory::ToxicityClassifierClientFactory(){
+
+}
+
+std::unique_ptr<IClassifierClient> ToxicityClassifierClientFactory::Create(){
+
+    const char* server_address = std::getenv("GRPC_SERVER_ADDRESS");
+    
+    return std::make_unique<ToxicityClassifierClient>(
+        grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()));
+}

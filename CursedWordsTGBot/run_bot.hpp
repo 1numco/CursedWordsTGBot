@@ -15,18 +15,23 @@
 #include "parser.hpp"
 #include "server.hpp"
 #include "worker.hpp"
+#include "client.hpp"
 #include "signalhandler.hpp"
 #include <grpcpp/grpcpp.h>
 
 void run_bot(std::string token){
-        grpc_init();
         std::unique_ptr<TgBot   ::Bot> ptr_bot = std::make_unique<TgBot::Bot>(token);
+        
 
         Logger::getInstance().setName(ptr_bot->getApi().getMe()->username);
         Logger::getInstance().setLevel(Logger::Levels::Debug);
 
         std::shared_ptr<Queue<ITask>> ptr_queue = std::make_shared<Queue<ITask>> ();
-        Server server(std::move(ptr_bot), ptr_queue);
+        
+        std::unique_ptr<ToxicityClassifierClientFactory> ptr_factory = std::make_unique<ToxicityClassifierClientFactory>();
+
+        Server server(std::move(ptr_bot), ptr_queue, std::move(ptr_factory));
+
         Worker worker(ptr_queue);
 
         SignalHandler handler({ SIGINT, SIGTERM }, [&](){

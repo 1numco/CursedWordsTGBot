@@ -19,28 +19,91 @@
 #include <pthread.h>
 #include <csignal>
 
-
-struct Message{
+struct Message {
     std::int32_t  messageId_;
     std::string messageText_;
-    Message( std::int32_t messageId,  std::string messageText): messageId_(messageId), messageText_(messageText) {
-
-    }
+    Message(std::int32_t messageId, std::string messageText) 
+        : messageId_(messageId), messageText_(std::move(messageText)) {}
 };
 
-class ReactorResultTest : public ::testing::Test{
+class ReactorResultTest : public ::testing::Test {
 protected:
-    void SetUp() override;
-    void TearDown() override;
-    void generator();
-    void checker();
+    void SetUp() override {
+        t_bot = std::make_shared<TgBot::Bot>(token_one);
+        count_recieve_messages = 0;
+        chat_id_ = -1002432345513;
+    }
+
+    void TearDown() override {}
+
+    void generator() {
+        const char* filePath = std::getenv("MESSAGES_FILE_PATH");
+        if (!filePath) {
+            filePath = defaultFilePath;  // Используем статическое значение по умолчанию
+        }
+        
+        std::ifstream inputFile(filePath);
+        if (!inputFile) {
+            std::cerr << "Не удалось открыть файл!" << std::endl;
+            return;
+        }
+        
+        std::string line;
+        while (std::getline(inputFile, line)) {
+            {
+                std::lock_guard lg{set_mutex};
+                message_container.insert(line);
+            }
+            t_bot->getApi().sendMessage(chat_id_, line);
+        }
+    }
+
+    void checker() {
+        auto last_change_time = std::chrono::steady_clock::now();
+        std::chrono::duration<double> elapsed_seconds;
+
+        t_bot->getEvents().onAnyMessage([&](TgBot::Message::Ptr message) {
+            count_recieve_messages++;
+            {
+                std::lock_guard lg{set_mutex};
+                ASSERT_TRUE(message_container.count(message->replyToMessage->text));
+            }
+            last_change_time = std::chrono::steady_clock::now(); 
+        });
+        
+        try {
+            TgBot::TgLongPoll longPoll(*t_bot);
+            while (count_recieve_messages <= limit_sent_messages_ && 
+                   elapsed_seconds.count() < limit_time_in_sec) {
+                longPoll.start();
+                elapsed_seconds = std::chrono::steady_clock::now() - last_change_time;
+            }
+        } catch (const TgBot::TgException& e) {
+            std::cerr << "error: " << e.what() << std::endl;
+        }
+    }
 
 private:
-    std::atomic<size_t> count_recieve_messages;
+    std::atomic<size_t> count_recieve_messages{0};
     std::shared_ptr<TgBot::Bot> t_bot;
     std::int64_t chat_id_;
     const size_t limit_sent_messages_ = 5;
     const size_t limit_time_in_sec = 10;
     std::set<std::string> message_container;
     std::mutex set_mutex;
+
+    // Статические члены
+    static inline const char* defaultFilePath = "./Tests/FunctionalTests/messages.txt";
+    static inline const std::string token_one = "7212434431:AAFLuR1mQTqpageO7x575hkQzW7DzJTXdNs";
 };
+
+TEST_F(ReactorResultTest, FirstTest) {
+    std::jthread mainThread([&]() {
+        run_bot(token_one);  // Используем статический токен
+    });
+
+    generator();
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+    std::raise(SIGINT);
+    checker();
+}

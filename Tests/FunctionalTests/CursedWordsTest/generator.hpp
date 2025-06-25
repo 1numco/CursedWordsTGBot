@@ -13,34 +13,34 @@
 #include <experimental/random>
 #include "task.hpp"
 #include "queue.hpp"
+#include "logger.hpp"
 #include <tgbot/tgbot.h>
-#include "run_bot.hpp"
 #include <chrono>
 #include <pthread.h>
 #include <csignal>
 
-
-struct Message{
+struct Message {
     std::int32_t  messageId_;
     std::string messageText_;
-    Message( std::int32_t messageId,  std::string messageText): messageId_(messageId), messageText_(messageText) {
-
-    }
+    Message(std::int32_t messageId, std::string messageText) 
+        : messageId_(messageId), messageText_(std::move(messageText)) {}
 };
 
-class ReactorResultTest : public ::testing::Test{
-protected:
-    void SetUp() override;
-    void TearDown() override;
+class Generator{
+
+public:
+    Generator(std::string token);
     void generator();
-    void checker();
 
 private:
-    std::atomic<size_t> count_recieve_messages;
+    std::atomic<size_t> count_recieve_messages{0};
     std::shared_ptr<TgBot::Bot> t_bot;
     std::int64_t chat_id_;
     const size_t limit_sent_messages_ = 5;
-    const size_t limit_time_in_sec = 12;
+    const size_t limit_time_in_sec = 8;
     std::map<std::string, bool> message_container;
     std::mutex set_mutex;
+
+    const inline static std::string filePath_ = "./bins/Tests/FunctionalTests/messages.txt";
+    std::string token_;
 };

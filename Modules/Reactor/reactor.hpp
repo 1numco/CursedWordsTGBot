@@ -10,14 +10,14 @@
 
 class IReactor{
 public:
-    virtual void react(std::string) = 0;
+    virtual void react(bool) = 0;
     virtual ~IReactor() = default;
 };
 
 class EchoReactor final: public IReactor{
 public:
     EchoReactor(std::shared_ptr<TgBot::Bot> ptr_bot, std::string message, std::int64_t chat_id, std::int32_t messageId);
-    void react(std::string) final;
+    void react(bool) final;
 
     ~EchoReactor();
 private:
@@ -30,7 +30,7 @@ private:
 class CursedWordsReactor final: public IReactor{
 public:
     CursedWordsReactor(std::shared_ptr<TgBot::Bot> ptr_bot, std::string message, std::int64_t chat_id, std::int32_t messageId);
-    void react(std::string classification_result) final;
+    void react(bool classification_result) final;
     ~CursedWordsReactor();
 private:
     std::shared_ptr<TgBot::Bot> ptr_bot_;

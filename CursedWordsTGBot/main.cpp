@@ -40,6 +40,6 @@ int main(int argc, char *argv[]) {
         Logger::getInstance().logInfo(Logger::Levels::Info, ex.what());
         std::exit(EXIT_FAILURE);
     }
-    grpc_shutdown();
+        
     return 0;
 };

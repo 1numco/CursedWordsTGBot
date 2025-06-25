@@ -12,22 +12,22 @@
 class ITask{
 public:
     virtual void execute() = 0;
-    ~ITask() = default;
+    virtual ~ITask() = default;
 };
 
 
-class CRTask: public ITask{
+class BaseMessageProcessingBotTask: public ITask{
 public:
-    CRTask(std::shared_ptr<IClassificator> classificator, std::shared_ptr<IReactor> react);
+    BaseMessageProcessingBotTask(std::shared_ptr<IClassificator> classificator, std::shared_ptr<IReactor> react);
     virtual void execute() final;
-    ~CRTask();
+    ~BaseMessageProcessingBotTask();
 protected:
     std::shared_ptr<IClassificator> classificator_; 
     std::shared_ptr<IReactor> reactor_; 
 };
 
 
-class CursedWordDetectingTask: public CRTask{
+class CursedWordDetectingTask: public BaseMessageProcessingBotTask{
 public:
     CursedWordDetectingTask(std::shared_ptr<IClassificator> classificator, std::shared_ptr<IReactor> react);
     ~CursedWordDetectingTask();

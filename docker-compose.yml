@@ -1,4 +1,4 @@
-version: '3.8'
+#version: '3.8'
 
 services:
   grpc_server:
@@ -9,23 +9,23 @@ services:
       - app_network
     healthcheck:
       test: ["CMD-SHELL", "grpc_health_probe -addr=:50051 || exit 1"]
-      interval: 2s
-      timeout: 5s
+      interval: 5s
+      timeout: 10s
       retries: 15
-      start_period: 30s
+      start_period: 60s
     deploy:
       resources:
         limits:
           cpus: '2.0'
           memory: 2G
 
-  test_runner:
+  running_bot:
     image: ${DOCKER_USERNAME}/cwbot_base:${COMMON_IMAGES_VERSION}
     entrypoint: []  # Явный сброс entrypoint
     environment:
-      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TOKEN_RUNNING_MAIN_BOT=${TOKEN_RUNNING_MAIN_BOT}
       - GRPC_SERVER_ADDRESS=grpc_server:50051
-      - MESSAGES_FILE_PATH=./bins/Tests/FunctionalTests/CursedWordsTest/messages.txt
+      - MESSAGES_FILE_PATH=./bins/Tests/FunctionalTests/messages.txt
       - SOURCE_DIR=${SOURCE_DIR}
     depends_on:
       grpc_server:
@@ -37,9 +37,41 @@ services:
     - /bin/bash
     - -c
     - |
-      /app/bins/Tests/FunctionalTests/CursedWordsTest/cursedWordsTest
+      /app/bins/Tests/FunctionalTests/CursedWordsTest/running_bot
     networks:
       - app_network
+
+  generator:
+    image: ${DOCKER_USERNAME}/cwbot_base:${COMMON_IMAGES_VERSION}
+    environment:
+      - TELEGRAM_TOKEN_GENERATOR=${TELEGRAM_TOKEN_GENERATOR}
+      - GRPC_SERVER_ADDRESS=grpc_server:50051
+      - MESSAGES_FILE_PATH=./bins/Tests/FunctionalTests/messages.txt
+      - SOURCE_DIR=${SOURCE_DIR}
+    networks:
+      - app_network
+    depends_on:
+      - running_bot
+    volumes:
+    - ${SOURCE_DIR}:/app:cached  # Явно указываем режим монтирования
+    working_dir: /app
+    command: /app/bins/Tests/FunctionalTests/CursedWordsTest/generator
+
+  checker:
+    image: ${DOCKER_USERNAME}/cwbot_base:${COMMON_IMAGES_VERSION}
+    environment:
+      - TELEGRAM_TOKEN_CHECKER=${TELEGRAM_TOKEN_CHECKER}
+      - GRPC_SERVER_ADDRESS=grpc_server:50051
+      - MESSAGES_FILE_PATH=./bins/Tests/FunctionalTests/messages.txt
+      - SOURCE_DIR=${SOURCE_DIR}
+    networks:
+      - app_network
+    depends_on:
+      - running_bot
+    volumes:
+    - ${SOURCE_DIR}:/app:cached  # Явно указываем режим монтирования
+    working_dir: /app
+    command: /app/bins/Tests/FunctionalTests/CursedWordsTest/checker
 
 networks:
   app_network:

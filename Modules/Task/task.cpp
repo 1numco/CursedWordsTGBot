@@ -1,20 +1,20 @@
 #include "task.hpp"
 
-CRTask::CRTask(std::shared_ptr<IClassificator> classificator, std::shared_ptr<IReactor> reactor): classificator_(classificator), reactor_(reactor){
+BaseMessageProcessingBotTask::BaseMessageProcessingBotTask(std::shared_ptr<IClassificator> classificator, std::shared_ptr<IReactor> reactor): classificator_(classificator), reactor_(reactor){
 
 }
 
-void CRTask::execute(){
+void BaseMessageProcessingBotTask::execute(){
     reactor_->react(classificator_->check());
 }
 
-CRTask::~CRTask(){
+BaseMessageProcessingBotTask::~BaseMessageProcessingBotTask(){
 
 }
 
 
 CursedWordDetectingTask::CursedWordDetectingTask(std::shared_ptr<IClassificator> classificator, std::shared_ptr<IReactor> reactor)
-: CRTask(classificator, reactor){
+: BaseMessageProcessingBotTask(classificator, reactor){
 
 }
 
