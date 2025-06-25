@@ -2,23 +2,29 @@ name: CursedWords Bot CI/CD
 
 on:
   push:
-    branches: ["main"]
+    branches: ["**"]
   pull_request:
     branches: ["**"]
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image_version: ["1.0"]
     container:
-      image: docker.io/jonnyrembo/cwbot_base:1.0
+      image: docker.io/jonnyrembo/cwbot_base:${{ matrix.image_version }}
       env:
-        TOKEN_RUNNING_MAIN_BOT="7763682966:AAEFBGifblSqB5of8cyS5WKjC6kK6pxTIuY"
-        TELEGRAM_TOKEN_GENERATOR="7913850529:AAHRcgeMjun-7U0mWsh5TF2NPUE8WyLGkLU"
-        TELEGRAM_TOKEN_CHECKER="7212434431:AAFLuR1mQTqpageO7x575hkQzW7DzJTXdNs"
+          TOKEN_RUNNING_MAIN_BOT: 7763682966:AAEFBGifblSqB5of8cyS5WKjC6kK6pxTIuY"
+          TELEGRAM_TOKEN_GENERATOR: 7913850529:AAHRcgeMjun-7U0mWsh5TF2NPUE8WyLGkLU
+          TELEGRAM_TOKEN_CHECKER: 7212434431:AAFLuR1mQTqpageO7x575hkQzW7DzJTXdNs
 
-        DOCKER_USERNAME: "jonnyrembo"
-        COMMON_IMAGES_VERSION: "1.0"
-        SOURCE_DIR: ${{ github.workspace }}
+          DOCKER_USERNAME: "jonnyrembo"
+          COMMON_IMAGES_VERSION: "1.0"
+          SOURCE_DIR: ${{ github.workspace }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          COMMON_IMAGES_VERSION: "1.0"
+          SOURCE_DIR: ${{ github.workspace }}
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock
         - ${{ github.workspace }}:/github/workspace  # Монтируем в стандартный путь
@@ -36,7 +42,6 @@ jobs:
         run: |
           cd build
           ctest --output-on-failure --verbose
-
 
       - name: Start infrastructure and run functional tests
         run: |
