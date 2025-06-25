@@ -2,8 +2,6 @@
 
 set -e
 
-docker compose down --remove-orphans
-
 docker compose up -d running_bot
 
 docker compose run --rm generator  # Ожидаем завершения
