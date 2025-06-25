@@ -42,6 +42,5 @@ jobs:
 
       - name: Start infrastructure and run functional tests
         run: |
-          ./functional_tests_enviroment.sh up
+
           ./docker-compose-run-tests.sh
-          ./functional_tests_enviroment.sh down
