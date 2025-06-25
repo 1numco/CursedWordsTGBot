@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 docker compose up -d running_bot
 
 docker compose run --rm generator  # Ожидаем завершения
