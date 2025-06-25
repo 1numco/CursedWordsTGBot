@@ -14,6 +14,5 @@ docker kill --signal=SIGINT $RUNNING_BOT_CONTAINER
 echo "Запуск checker..."
 docker compose run --rm checker
 
-# Остановка всех сервисов
 echo "Остановка всех сервисов..."
 docker compose down
