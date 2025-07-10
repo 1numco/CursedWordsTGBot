@@ -28,7 +28,7 @@ jobs:
           SOURCE_DIR: ${{ github.workspace }}
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock
-        - ${{ github.workspace }}:/github/workspace  # Монтируем в стандартный путь
+        - ${{ github.workspace }}:/github/workspace
       options: --privileged
 
     steps:
