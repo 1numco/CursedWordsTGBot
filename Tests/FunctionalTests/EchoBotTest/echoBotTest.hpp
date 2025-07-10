@@ -98,7 +98,7 @@ private:
 
 TEST_F(ReactorResultTest, FirstTest) {
     std::jthread mainThread([&]() {
-        run_bot(token_one);  // Используем статический токен
+        run_bot(token_one); 
     });
 
     generator();

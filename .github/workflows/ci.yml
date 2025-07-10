@@ -1,5 +1,4 @@
 name: CursedWords Bot CI/CD
-
 on:
   push:
     branches: ["main"]
