@@ -92,7 +92,6 @@ private:
     std::set<std::string> message_container;
     std::mutex set_mutex;
 
-    // Статические члены
     static inline const char* defaultFilePath = "./Tests/FunctionalTests/messages.txt";
     static inline const std::string token_one = "7212434431:AAFLuR1mQTqpageO7x575hkQzW7DzJTXdNs";
 };

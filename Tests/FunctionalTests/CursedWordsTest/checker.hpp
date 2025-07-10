@@ -3,6 +3,7 @@
 #include <fstream>
 #include <atomic>
 #include <map>
+#include "logger.hpp"
 
 class Checker : public ::testing::Test {
 protected:

@@ -20,34 +20,33 @@
 #include <grpcpp/grpcpp.h>
 
 void run_bot(std::string token){
-        std::unique_ptr<TgBot   ::Bot> ptr_bot = std::make_unique<TgBot::Bot>(token);
-        
+    std::unique_ptr<TgBot   ::Bot> ptr_bot = std::make_unique<TgBot::Bot>(token);
+    
+    Logger::getInstance().setName(ptr_bot->getApi().getMe()->username);
+    Logger::getInstance().setLevel(Logger::Levels::Debug);
 
-        Logger::getInstance().setName(ptr_bot->getApi().getMe()->username);
-        Logger::getInstance().setLevel(Logger::Levels::Debug);
+    auto ptr_queue = std::make_shared<Queue<ITask>> ();
+    
+    auto ptr_factory = std::make_unique<ToxicityClassifierClientFactory>();
 
-        std::shared_ptr<Queue<ITask>> ptr_queue = std::make_shared<Queue<ITask>> ();
-        
-        std::unique_ptr<ToxicityClassifierClientFactory> ptr_factory = std::make_unique<ToxicityClassifierClientFactory>();
+    Server server(std::move(ptr_bot), ptr_queue, std::move(ptr_factory));
 
-        Server server(std::move(ptr_bot), ptr_queue, std::move(ptr_factory));
+    Worker worker(ptr_queue);
 
-        Worker worker(ptr_queue);
+    SignalHandler handler({ SIGINT, SIGTERM }, [&](){
+            static int count = 0;
+            if (!count++) {
+                server.terminate();
+                worker.terminate();
 
-        SignalHandler handler({ SIGINT, SIGTERM }, [&](){
-                static int count = 0;
-                if (!count++) {
-                    server.terminate();
-                    worker.terminate();
-
-                    Logger::getInstance().logInfo(Logger::Levels::Critical, "Recieved shutdown signal. Stop polling!");
-                } else {
-                    Logger::getInstance().logInfo(Logger::Levels::Fatal, "Recieved second shutdown signal. Exiting!");
-                    std::exit(EXIT_FAILURE);
-                }
+                Logger::getInstance().logInfo(Logger::Levels::Critical, "Recieved shutdown signal. Stop polling!");
+            } else {
+                Logger::getInstance().logInfo(Logger::Levels::Fatal, "Recieved second shutdown signal. Exiting!");
+                std::exit(EXIT_FAILURE);
             }
-        );
-        std::thread worker_thread(&Worker::run, &worker);
-        server.start();
-        worker_thread.join();
+        }
+    );
+    std::thread worker_thread(&Worker::run, &worker);
+    server.start();
+    worker_thread.join();
 }
