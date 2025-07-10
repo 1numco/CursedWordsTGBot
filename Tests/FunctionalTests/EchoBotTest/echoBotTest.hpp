@@ -29,7 +29,7 @@ struct Message {
 class ReactorResultTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        t_bot = std::make_shared<TgBot::Bot>(token_one);
+        t_bot = std::make_shared<TgBot::Bot>(token_one_);
         count_recieve_messages = 0;
         chat_id_ = -1002432345513;
     }
@@ -39,7 +39,7 @@ protected:
     void generator() {
         const char* filePath = std::getenv("MESSAGES_FILE_PATH");
         if (!filePath) {
-            filePath = defaultFilePath;  // Используем статическое значение по умолчанию
+            filePath = defaultFilePath_;  // Используем статическое значение по умолчанию
         }
         
         std::ifstream inputFile(filePath);
@@ -92,8 +92,8 @@ private:
     std::set<std::string> message_container;
     std::mutex set_mutex;
 
-    static inline const char* defaultFilePath = "./Tests/FunctionalTests/messages.txt";
-    static inline const std::string token_one = "7212434431:AAFLuR1mQTqpageO7x575hkQzW7DzJTXdNs";
+    static inline const char* defaultFilePath_ = "./Tests/FunctionalTests/EchoBotTest/messages.txt";
+    static inline const std::string token_one_ = "7212434431:AAFLuR1mQTqpageO7x575hkQzW7DzJTXdNs";
 };
 
 TEST_F(ReactorResultTest, FirstTest) {
