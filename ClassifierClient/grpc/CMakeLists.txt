@@ -3,7 +3,7 @@ project(toxicity_classifier)
 
 set(target toxicity_classifier)
 
-# Найти Python и grpc_tools.protoc
+# Найти Python
 find_package(Python COMPONENTS Interpreter Development REQUIRED)
 
 # Настройка путей для Protobuf и gRPC
@@ -22,14 +22,14 @@ find_program(GRPC_CPP_PLUGIN_EXECUTABLE grpc_cpp_plugin)
 # Путь к .proto файлу
 set(PROTO_FILE "${CMAKE_CURRENT_SOURCE_DIR}/toxicity_classifier.proto")
 
-# Определить выходные файлы для C++ - В ИСХОДНОЙ ДИРЕКТОРИИ
+# Определить выходные файлы для C++ - В ТЕКУЩЕЙ ДИРЕКТОРИИ
 set(PROTO_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/toxicity_classifier.pb.cc")
 set(PROTO_HDRS "${CMAKE_CURRENT_SOURCE_DIR}/toxicity_classifier.pb.h")
 set(GRPC_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/toxicity_classifier.grpc.pb.cc")
 set(GRPC_HDRS "${CMAKE_CURRENT_SOURCE_DIR}/toxicity_classifier.grpc.pb.h")
 
-# Определить выходные файлы для Python
-set(PYTHON_OUTPUT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/generated_python")
+# Определить выходные файлы для Python - В ДИРЕКТОРИИ SERVER_GRPC
+set(PYTHON_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/server_grpc")  # Абсолютный путь
 file(MAKE_DIRECTORY ${PYTHON_OUTPUT_DIR})
 set(PYTHON_PROTO_FILES
     "${PYTHON_OUTPUT_DIR}/toxicity_classifier_pb2.py"
@@ -75,7 +75,7 @@ add_custom_target(generate_python_proto DEPENDS ${PYTHON_PROTO_FILES})
 add_dependencies(${target} generate_python_proto)
 
 target_include_directories(${target} PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}  # Указываем исходную директорию
+    ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 # Связывание зависимостей
