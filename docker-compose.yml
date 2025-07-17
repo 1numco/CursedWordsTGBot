@@ -21,7 +21,7 @@ services:
 
   running_bot:
     image: ${DOCKER_USERNAME}/cwbot_base:${COMMON_IMAGES_VERSION}
-    entrypoint: []  # Явный сброс entrypoint
+    entrypoint: [] 
     environment:
       - TOKEN_RUNNING_MAIN_BOT=${TOKEN_RUNNING_MAIN_BOT}
       - GRPC_SERVER_ADDRESS=grpc_server:50051
@@ -31,7 +31,7 @@ services:
       grpc_server:
         condition: service_healthy
     volumes:
-    - ${SOURCE_DIR}:/app:cached  # Явно указываем режим монтирования
+    - ${SOURCE_DIR}:/app:cached 
     working_dir: /app
     command:
     - /bin/bash
@@ -53,7 +53,7 @@ services:
     depends_on:
       - running_bot
     volumes:
-    - ${SOURCE_DIR}:/app:cached  # Явно указываем режим монтирования
+    - ${SOURCE_DIR}:/app:cached 
     working_dir: /app
     command: /app/bins/Tests/FunctionalTests/CursedWordsTest/generator
 
@@ -69,7 +69,7 @@ services:
     depends_on:
       - running_bot
     volumes:
-    - ${SOURCE_DIR}:/app:cached  # Явно указываем режим монтирования
+    - ${SOURCE_DIR}:/app:cached 
     working_dir: /app
     command: /app/bins/Tests/FunctionalTests/CursedWordsTest/checker
 
