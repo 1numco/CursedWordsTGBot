@@ -16,8 +16,8 @@ protected:
     std::atomic<size_t> count_recieve_messages{0};
     std::shared_ptr<TgBot::Bot> t_bot_checker;
     std::int64_t chat_id_;
-    const size_t limit_sent_messages_ = 5;
-    const size_t limit_time_in_sec = 8;
+    static inline const size_t limit_sent_messages_ = 5;
+    static inline const size_t limit_time_in_sec = 8;
     std::map<std::string, bool> message_container;
     std::mutex set_mutex;
     std::chrono::time_point<std::chrono::steady_clock> last_change_time;

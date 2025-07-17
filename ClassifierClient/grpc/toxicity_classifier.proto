@@ -11,5 +11,5 @@ message MessageRequest {
 }
 
 message MessageResponse {
-  float toxicity_probability = 1;
+  double toxicity_probability = 1;
 }

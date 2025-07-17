@@ -10,7 +10,7 @@
 
 class IReactor{
 public:
-    virtual void react(bool) = 0;
+    virtual void react(bool classification_result) = 0;
     virtual ~IReactor() = default;
 };
 

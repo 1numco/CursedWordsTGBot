@@ -1,15 +1,19 @@
 #!/bin/bash
+
 set -e
 
-echo "Запуск running_bot..."
+docker compose down --remove-orphans
+
 docker compose up -d running_bot
 
-echo "Запуск generator..."
-docker compose run --rm generator
+docker compose run --rm generator  # Ожидаем завершения
+
+RUNNING_BOT_CONTAINER=$(docker compose ps -q running_bot)
+docker kill --signal=SIGINT $RUNNING_BOT_CONTAINER
 
 echo "Запуск checker..."
 docker compose run --rm checker
 
-echo "Остановка тестовых контейнеров..."
-docker compose stop running_bot
-docker compose rm -f running_bot generator checker
+# Остановка всех сервисов
+echo "Остановка всех сервисов..."
+docker compose down

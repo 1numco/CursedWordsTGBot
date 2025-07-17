@@ -106,7 +106,7 @@ const char descriptor_table_protodef_toxicity_5fclassifier_2eproto[] ABSL_ATTRIB
     "\n\031toxicity_classifier.proto\022\023toxicity_cl"
     "assifier\"!\n\016MessageRequest\022\017\n\007message\030\001 "
     "\001(\t\"/\n\017MessageResponse\022\034\n\024toxicity_proba"
-    "bility\030\001 \001(\0022t\n\022ToxicityClassifier\022^\n\017Cl"
+    "bility\030\001 \001(\0012t\n\022ToxicityClassifier\022^\n\017Cl"
     "assifyMessage\022#.toxicity_classifier.Mess"
     "ageRequest\032$.toxicity_classifier.Message"
     "Response\"\000b\006proto3"
@@ -395,15 +395,15 @@ const ::_pbi::TcParseTable<0, 1, 0, 0, 2> MessageResponse::_table_ = {
     ::_pbi::TcParser::GetTable<::toxicity_classifier::MessageResponse>(),  // to_prefetch
     #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
   }, {{
-    // float toxicity_probability = 1;
-    {::_pbi::TcParser::FastF32S1,
-     {13, 63, 0, PROTOBUF_FIELD_OFFSET(MessageResponse, _impl_.toxicity_probability_)}},
+    // double toxicity_probability = 1;
+    {::_pbi::TcParser::FastF64S1,
+     {9, 63, 0, PROTOBUF_FIELD_OFFSET(MessageResponse, _impl_.toxicity_probability_)}},
   }}, {{
     65535, 65535
   }}, {{
-    // float toxicity_probability = 1;
+    // double toxicity_probability = 1;
     {PROTOBUF_FIELD_OFFSET(MessageResponse, _impl_.toxicity_probability_), 0, 0,
-    (0 | ::_fl::kFcSingular | ::_fl::kFloat)},
+    (0 | ::_fl::kFcSingular | ::_fl::kDouble)},
   }},
   // no aux_entries
   {{
@@ -428,15 +428,15 @@ PROTOBUF_NOINLINE void MessageResponse::Clear() {
   ::uint32_t cached_has_bits = 0;
   (void)cached_has_bits;
 
-  // float toxicity_probability = 1;
-  static_assert(sizeof(::uint32_t) == sizeof(float),
-                "Code assumes ::uint32_t and float are the same size.");
-  float tmp_toxicity_probability = this->_internal_toxicity_probability();
-  ::uint32_t raw_toxicity_probability;
+  // double toxicity_probability = 1;
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
+  double tmp_toxicity_probability = this->_internal_toxicity_probability();
+  ::uint64_t raw_toxicity_probability;
   memcpy(&raw_toxicity_probability, &tmp_toxicity_probability, sizeof(tmp_toxicity_probability));
   if (raw_toxicity_probability != 0) {
     target = stream->EnsureSpace(target);
-    target = ::_pbi::WireFormatLite::WriteFloatToArray(
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(
         1, this->_internal_toxicity_probability(), target);
   }
 
@@ -457,14 +457,14 @@ PROTOBUF_NOINLINE void MessageResponse::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // float toxicity_probability = 1;
-  static_assert(sizeof(::uint32_t) == sizeof(float),
-                "Code assumes ::uint32_t and float are the same size.");
-  float tmp_toxicity_probability = this->_internal_toxicity_probability();
-  ::uint32_t raw_toxicity_probability;
+  // double toxicity_probability = 1;
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
+  double tmp_toxicity_probability = this->_internal_toxicity_probability();
+  ::uint64_t raw_toxicity_probability;
   memcpy(&raw_toxicity_probability, &tmp_toxicity_probability, sizeof(tmp_toxicity_probability));
   if (raw_toxicity_probability != 0) {
-    total_size += 5;
+    total_size += 9;
   }
 
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
@@ -479,10 +479,10 @@ void MessageResponse::MergeImpl(::google::protobuf::MessageLite& to_msg, const :
   ::uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
-  static_assert(sizeof(::uint32_t) == sizeof(float),
-                "Code assumes ::uint32_t and float are the same size.");
-  float tmp_toxicity_probability = from._internal_toxicity_probability();
-  ::uint32_t raw_toxicity_probability;
+  static_assert(sizeof(::uint64_t) == sizeof(double),
+                "Code assumes ::uint64_t and double are the same size.");
+  double tmp_toxicity_probability = from._internal_toxicity_probability();
+  ::uint64_t raw_toxicity_probability;
   memcpy(&raw_toxicity_probability, &tmp_toxicity_probability, sizeof(tmp_toxicity_probability));
   if (raw_toxicity_probability != 0) {
     _this->_impl_.toxicity_probability_ = from._impl_.toxicity_probability_;

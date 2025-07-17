@@ -13,10 +13,10 @@
 #include <experimental/random>
 #include "task.hpp"
 #include "queue.hpp"
+#include "logger.hpp"
 #include <tgbot/tgbot.h>
 #include "run_bot.hpp"
 #include <chrono>
-#include <pthread.h>
 #include <csignal>
 
 struct Message {
@@ -29,6 +29,7 @@ struct Message {
 class ReactorResultTest : public ::testing::Test {
 protected:
     void SetUp() override {
+        const char* token_one_= std::getenv("TELEGRAM_TOKEN_GENERATOR");
         t_bot = std::make_shared<TgBot::Bot>(token_one_);
         count_recieve_messages = 0;
         chat_id_ = -1002432345513;
@@ -39,12 +40,12 @@ protected:
     void generator() {
         const char* filePath = std::getenv("MESSAGES_FILE_PATH");
         if (!filePath) {
-            filePath = defaultFilePath_;  // Используем статическое значение по умолчанию
+            filePath = defaultFilePath_; 
         }
         
         std::ifstream inputFile(filePath);
         if (!inputFile) {
-            std::cerr << "Не удалось открыть файл!" << std::endl;
+            Logger::getInstance().logInfo(Logger::Levels::Critical, "Не удалось открыть файл!\n");
             return;
         }
         
@@ -79,7 +80,7 @@ protected:
                 elapsed_seconds = std::chrono::steady_clock::now() - last_change_time;
             }
         } catch (const TgBot::TgException& e) {
-            std::cerr << "error: " << e.what() << std::endl;
+            Logger::getInstance().logInfo(Logger::Levels::Critical, e.what());
         }
     }
 
@@ -87,18 +88,19 @@ private:
     std::atomic<size_t> count_recieve_messages{0};
     std::shared_ptr<TgBot::Bot> t_bot;
     std::int64_t chat_id_;
-    const size_t limit_sent_messages_ = 5;
-    const size_t limit_time_in_sec = 10;
+    static inline const size_t limit_sent_messages_ = 5;
+    static inline const size_t limit_time_in_sec = 10;
     std::set<std::string> message_container;
     std::mutex set_mutex;
 
     static inline const char* defaultFilePath_ = "./Tests/FunctionalTests/EchoBotTest/messages.txt";
-    static inline const std::string token_one_ = "7212434431:AAFLuR1mQTqpageO7x575hkQzW7DzJTXdNs";
 };
 
 TEST_F(ReactorResultTest, FirstTest) {
+
+    const char* token_running_bot = std::getenv("TOKEN_RUNNING_MAIN_BOT");
     std::jthread mainThread([&]() {
-        run_bot(token_one); 
+        run_bot(token_running_bot); 
     });
 
     generator();

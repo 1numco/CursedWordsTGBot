@@ -5,35 +5,32 @@ ToxicityClassifierClient::ToxicityClassifierClient(std::shared_ptr<Channel> chan
   
 }
 
-float ToxicityClassifierClient::ClassifyMessage(const std::string& message) {
-
-    std::cout << "Sending message: " << message << std::endl;
+double ToxicityClassifierClient::ClassifyMessage(const std::string& message) {
 
     MessageRequest request;
     request.set_message(message);
-
     MessageResponse response;
     ClientContext context;
 
     Status status = stub_->ClassifyMessage(&context, request, &response);
 
     if (status.ok()) {
-      std::cout << "Received response: " << response.toxicity_probability() << std::endl;
+      std::cout<<"response.toxicity_probability(): "<<response.toxicity_probability()<<std::endl;
       return response.toxicity_probability();
     } else {
-      std::cout << "RPC failed: " << status.error_message() << std::endl;
-      return -1;
+      throw std::runtime_error("RPC failed: " + status.error_message());
     }
 }
 
-ToxicityClassifierClientFactory::ToxicityClassifierClientFactory(){
+ToxicityClassifierClientFactory::ToxicityClassifierClientFactory() {
 
+  static const char* server_address = std::getenv("GRPC_SERVER_ADDRESS");
+  if (!server_address) {
+      throw std::runtime_error("GRPC_SERVER_ADDRESS environment variable not set");
+  }
+  channel_ = grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials());
 }
 
-std::unique_ptr<IClassifierClient> ToxicityClassifierClientFactory::Create(){
-
-    const char* server_address = std::getenv("GRPC_SERVER_ADDRESS");
-    
-    return std::make_unique<ToxicityClassifierClient>(
-        grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()));
+std::unique_ptr<IClassifierClient> ToxicityClassifierClientFactory::Create() {
+  return std::make_unique<ToxicityClassifierClient>(channel_);
 }

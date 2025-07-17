@@ -195,14 +195,14 @@ class MessageResponse final : public ::google::protobuf::Message
   enum : int {
     kToxicityProbabilityFieldNumber = 1,
   };
-  // float toxicity_probability = 1;
+  // double toxicity_probability = 1;
   void clear_toxicity_probability() ;
-  float toxicity_probability() const;
-  void set_toxicity_probability(float value);
+  double toxicity_probability() const;
+  void set_toxicity_probability(double value);
 
   private:
-  float _internal_toxicity_probability() const;
-  void _internal_set_toxicity_probability(float value);
+  double _internal_toxicity_probability() const;
+  void _internal_set_toxicity_probability(double value);
 
   public:
   // @@protoc_insertion_point(class_scope:toxicity_classifier.MessageResponse)
@@ -231,7 +231,7 @@ class MessageResponse final : public ::google::protobuf::Message
     inline explicit Impl_(::google::protobuf::internal::InternalVisibility visibility,
                           ::google::protobuf::Arena* arena, const Impl_& from,
                           const MessageResponse& from_msg);
-    float toxicity_probability_;
+    double toxicity_probability_;
     mutable ::google::protobuf::internal::CachedSize _cached_size_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -486,24 +486,24 @@ inline void MessageRequest::set_allocated_message(std::string* value) {
 
 // MessageResponse
 
-// float toxicity_probability = 1;
+// double toxicity_probability = 1;
 inline void MessageResponse::clear_toxicity_probability() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.toxicity_probability_ = 0;
 }
-inline float MessageResponse::toxicity_probability() const {
+inline double MessageResponse::toxicity_probability() const {
   // @@protoc_insertion_point(field_get:toxicity_classifier.MessageResponse.toxicity_probability)
   return _internal_toxicity_probability();
 }
-inline void MessageResponse::set_toxicity_probability(float value) {
+inline void MessageResponse::set_toxicity_probability(double value) {
   _internal_set_toxicity_probability(value);
   // @@protoc_insertion_point(field_set:toxicity_classifier.MessageResponse.toxicity_probability)
 }
-inline float MessageResponse::_internal_toxicity_probability() const {
+inline double MessageResponse::_internal_toxicity_probability() const {
   ::google::protobuf::internal::TSanRead(&_impl_);
   return _impl_.toxicity_probability_;
 }
-inline void MessageResponse::_internal_set_toxicity_probability(float value) {
+inline void MessageResponse::_internal_set_toxicity_probability(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.toxicity_probability_ = value;
 }

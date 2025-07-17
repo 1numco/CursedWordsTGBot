@@ -17,7 +17,7 @@ void Checker::fill_map() {
     std::ifstream inputFile(filePath_);
     
     if (!inputFile) {
-        std::cerr << "Не удалось открыть файл: " << filePath_ << std::endl;
+        Logger::getInstance().logInfo(Logger::Levels::Critical, "Не удалось открыть файл!\n");
         return;
     }
     
@@ -41,7 +41,6 @@ void Checker::fill_map() {
 }
 
 void Checker::message_handler(TgBot::Message::Ptr message) {
-    // Проверяем, что это ответ на сообщение
     if (!message->replyToMessage) {
         std::cout << "Сообщение не является ответом: " << message->text << std::endl;
         return;

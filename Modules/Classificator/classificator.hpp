@@ -24,7 +24,7 @@ class SimpleClassificator final: public IClassificator{
 public:
     SimpleClassificator(const std::string& message);
     bool check() final;
-    ~SimpleClassificator();
+    ~SimpleClassificator() = default;
 private:
     std::string message_;
 };
@@ -34,10 +34,10 @@ class CursedWordsClassificator: public IClassificator{
 public:
     CursedWordsClassificator( std::unique_ptr<IClassifierClient> ptr_client, const std::string& message);
     virtual bool check() override;
-    ~CursedWordsClassificator(); 
+    ~CursedWordsClassificator() = default; 
 private:
     std::unique_ptr<IClassifierClient> ptr_client_;
     std::string message_;
-    static float cursedwords;
+    static inline double cursedwords = 0.5;
 };
 

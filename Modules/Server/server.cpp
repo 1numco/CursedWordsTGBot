@@ -30,14 +30,10 @@ ptr_bot_(std::move(ptr_bot)), queue_(queue), ptr_factory_(std::move(ptr_factory)
 }
 
 void Server::start(){
-    try {
-
-        Logger::getInstance().logInfo(Logger::Levels::Info, "Webhook deleted successfully");
+    try {                                                                                                                                           
         TgBot::TgLongPoll longPoll(*ptr_bot_);
 
         while (!shutdown_requested) {
-
-            Logger::getInstance().logInfo(Logger::Levels::Info, "Long poll started");
             longPoll.start();
         }
         

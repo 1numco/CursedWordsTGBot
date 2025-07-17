@@ -33,14 +33,32 @@ RUN curl -SL https://github.com/docker/compose/releases/download/v2.20.0/docker-
 chmod +x /usr/local/bin/docker-compose
 
 
-RUN apt-get install -y libboost-system-dev libboost-thread-dev libboost-program-options-dev libboost-test-dev
+RUN apt-get update && apt-get install -y libboost-system-dev libboost-thread-dev libboost-program-options-dev libboost-test-dev
 
-RUN apt-get install -y libgtest-dev \
-  zip \
-  pkgconf \
+RUN apt-get update && apt-get install -y \
+    libgtest-dev \
+    zip \
+    pkgconf \
     protobuf-c-compiler \
-  libprotobuf-c-dev \
-  protobuf-compiler
+    libprotobuf-c-dev \
+    protobuf-compiler
+
+# Установка Python и venv
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    python3-venv \
+    && rm -rf /var/lib/apt/lists/*
+
+# Фиксируем версию setuptools для совместимости с protobuf
+RUN pip3 install --upgrade "setuptools<66.0.0"
+
+# Устанавливаем Python-зависимости
+RUN pip3 install \
+    grpcio==1.70.0 \
+    grpcio-tools==1.70.0 \
+    grpcio-health-checking==1.70.0 \
+    protobuf==5.29.0
 
 WORKDIR /
 
