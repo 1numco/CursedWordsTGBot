@@ -61,7 +61,7 @@ protected:
 
     void checker() {
         auto last_change_time = std::chrono::steady_clock::now();
-        std::chrono::duration<double> elapsed_seconds;
+        std::chrono::duration<double> elapsed_seconds = std::chrono::duration<double>::zero();
 
         t_bot->getEvents().onAnyMessage([&](TgBot::Message::Ptr message) {
             count_recieve_messages++;
