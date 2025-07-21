@@ -38,7 +38,7 @@ void Server::start(){
         }
         
         } catch (TgBot::TgException& e) {
-            Logger::getInstance().logInfo(Logger::Levels::Fatal, e.what());
+            Logger::getInstance().logInfo(Logger::Levels::Fatal, "An error occurred in the bot: " + std::string(e.what()));
         }
 }
 
