@@ -14,5 +14,6 @@ CursedWordsClassificator::CursedWordsClassificator(std::unique_ptr<IClassifierCl
 }
 
 double CursedWordsClassificator::check() {
-    return ptr_client_->ClassifyMessage(message_);
+    double probility = ptr_client_->ClassifyMessage(message_);
+    return probility;
 }

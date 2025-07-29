@@ -16,7 +16,7 @@ public:
 
 class EchoReactor final: public IReactor{
 public:
-    EchoReactor(std::shared_ptr<TgBot::Bot> ptr_bot, std::string&& message, std::int64_t chat_id, std::int32_t messageId);
+    EchoReactor(std::shared_ptr<TgBot::Bot> ptr_bot, const std::string& message, std::int64_t chat_id, std::int32_t messageId);
     void react(double classification_result) final;
 
     ~EchoReactor();
@@ -29,9 +29,8 @@ private:
 
 class CursedWordsReactor final: public IReactor{
 public:
-    CursedWordsReactor(std::shared_ptr<TgBot::Bot> ptr_bot, std::string&& message, std::int64_t chat_id, std::int32_t messageId);
+    CursedWordsReactor(std::shared_ptr<TgBot::Bot> ptr_bot, const std::string& message, std::int64_t chat_id, std::int32_t messageId);
     void react(double classification_result) final;
-    ~CursedWordsReactor();
 private:
     std::shared_ptr<TgBot::Bot> ptr_bot_;
     std::string message_;
