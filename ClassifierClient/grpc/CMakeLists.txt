@@ -23,13 +23,6 @@ set(PROTO_HDRS "${CMAKE_CURRENT_SOURCE_DIR}/toxicity_classifier.pb.h")
 set(GRPC_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/toxicity_classifier.grpc.pb.cc")
 set(GRPC_HDRS "${CMAKE_CURRENT_SOURCE_DIR}/toxicity_classifier.grpc.pb.h")
 
-set(PYTHON_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/server_grpc")
-file(MAKE_DIRECTORY ${PYTHON_OUTPUT_DIR})
-set(PYTHON_PROTO_FILES
-    "${PYTHON_OUTPUT_DIR}/toxicity_classifier_pb2.py"
-    "${PYTHON_OUTPUT_DIR}/toxicity_classifier_pb2_grpc.py"
-)
-
 add_custom_command(
     OUTPUT ${PROTO_SRCS} ${PROTO_HDRS} ${GRPC_SRCS} ${GRPC_HDRS}
     COMMAND ${Protobuf_PROTOC_EXECUTABLE}
@@ -42,26 +35,11 @@ add_custom_command(
     COMMENT "Generating gRPC C++ code"
 )
 
-add_custom_command(
-    OUTPUT ${PYTHON_PROTO_FILES}
-    COMMAND ${Python_EXECUTABLE} -m grpc_tools.protoc
-        -I "${CMAKE_CURRENT_SOURCE_DIR}"
-        --python_out "${PYTHON_OUTPUT_DIR}"
-        --grpc_python_out "${PYTHON_OUTPUT_DIR}"
-        --pyi_out "${PYTHON_OUTPUT_DIR}"
-        ${PROTO_FILE}
-    DEPENDS ${PROTO_FILE}
-    COMMENT "Generating gRPC Python code"
-)
-
 add_library(${target} STATIC
     client.cpp
     ${PROTO_SRCS}
     ${GRPC_SRCS}
 )
-
-add_custom_target(generate_python_proto DEPENDS ${PYTHON_PROTO_FILES})
-add_dependencies(${target} generate_python_proto)
 
 target_include_directories(${target} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
