@@ -24,7 +24,7 @@ void Checker::fill_map() {
     while (std::getline(inputFile, line)) {
         size_t last_space = line.find_last_of(' ');
         if (last_space == std::string::npos) {
-            std::cerr << "Некорректный формат строки: " << line << std::endl;
+            Logger::getInstance().logInfo(Logger::Levels::Critical,"Некорректный формат строки: " + line);
             continue;
         }
         
@@ -35,18 +35,17 @@ void Checker::fill_map() {
         message_container[message_text] = flag;
     }
     inputFile.close();
-    
-    std::cout << "Загружено тестовых случаев: " << message_container.size() << std::endl;
+    Logger::getInstance().logInfo(Logger::Levels::Info, "Загружено тестовых случаев: " + message_container.size());
 }
 
 void Checker::message_handler(TgBot::Message::Ptr message) {
     if (!message->replyToMessage) {
-        std::cout << "Сообщение не является ответом: " << message->text << std::endl;
+        Logger::getInstance().logInfo(Logger::Levels::Info, "Сообщение не является ответом: " + message->text);
         return;
     }
     
     if (message->replyToMessage->text.empty()) {
-        std::cout << "Оригинальное сообщение пустое" << std::endl;
+        Logger::getInstance().logInfo(Logger::Levels::Info, "Оригинальное сообщение пустое");
         return;
     }
     
@@ -54,7 +53,7 @@ void Checker::message_handler(TgBot::Message::Ptr message) {
     
     auto it = message_container.find(original_text);
     if (it == message_container.end()) {
-        std::cerr << "Неизвестное сообщение: " << original_text << std::endl;
+        Logger::getInstance().logInfo(Logger::Levels::Info, "Неизвестное сообщение: " + original_text);
         return;
     }
     

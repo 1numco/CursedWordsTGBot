@@ -8,3 +8,6 @@ commands_docker.txt
 update-tgbot-version.patch
 .vscode/
 
+/ClassifierClient/grpc/toxicity_classifier.pb*
+/ClassifierClient/grpc/toxicity_classifier.grpc*
+/server_grpc/toxicity_classifier_pb2*
