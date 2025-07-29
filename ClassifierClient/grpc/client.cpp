@@ -15,7 +15,6 @@ double ToxicityClassifierClient::ClassifyMessage(const std::string& message) {
     Status status = stub_->ClassifyMessage(&context, request, &response);
 
     if (status.ok()) {
-      std::cout<<"response.toxicity_probability(): "<<response.toxicity_probability()<<std::endl;
       return response.toxicity_probability();
     } else {
       throw std::runtime_error("RPC failed: " + status.error_message());
@@ -24,11 +23,11 @@ double ToxicityClassifierClient::ClassifyMessage(const std::string& message) {
 
 ToxicityClassifierClientFactory::ToxicityClassifierClientFactory() {
 
-  static const char* server_address = std::getenv("GRPC_SERVER_ADDRESS");
-  if (!server_address) {
-      throw std::runtime_error("GRPC_SERVER_ADDRESS environment variable not set");
-  }
-  channel_ = grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials());
+    static const char* server_address = std::getenv("GRPC_SERVER_ADDRESS");
+    if (!server_address) {
+        throw std::runtime_error("GRPC_SERVER_ADDRESS environment variable not set");
+    }
+    channel_ = grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials());
 }
 
 std::unique_ptr<IClassifierClient> ToxicityClassifierClientFactory::Create() {

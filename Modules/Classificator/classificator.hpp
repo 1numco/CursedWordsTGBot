@@ -16,14 +16,14 @@
 
 class IClassificator{
 public:
-    virtual bool check() = 0;
+    virtual double check() = 0;
     virtual ~IClassificator() = default;
 };
 
 class SimpleClassificator final: public IClassificator{
 public:
     SimpleClassificator(const std::string& message);
-    bool check() final;
+    double check() final;
     ~SimpleClassificator() = default;
 private:
     std::string message_;
@@ -33,11 +33,10 @@ private:
 class CursedWordsClassificator: public IClassificator{
 public:
     CursedWordsClassificator( std::unique_ptr<IClassifierClient> ptr_client, const std::string& message);
-    virtual bool check() override;
+    virtual double check() override;
     ~CursedWordsClassificator() = default; 
 private:
     std::unique_ptr<IClassifierClient> ptr_client_;
     std::string message_;
-    static inline double cursedwords = 0.5;
 };
 

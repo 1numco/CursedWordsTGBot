@@ -4,8 +4,8 @@ SimpleClassificator::SimpleClassificator(const std::string& message): message_(m
 
 }
 
-bool SimpleClassificator::check(){
-    return true;
+double SimpleClassificator::check(){
+    return 0.8;
 }
 
 CursedWordsClassificator::CursedWordsClassificator(std::unique_ptr<IClassifierClient> ptr_client, const std::string& message):
@@ -13,15 +13,6 @@ CursedWordsClassificator::CursedWordsClassificator(std::unique_ptr<IClassifierCl
 
 }
 
-bool CursedWordsClassificator::check() {
-    double probability = ptr_client_->ClassifyMessage(message_);
-    
-    if(probability > cursedwords){
-        std::cout<<"TRUE probability: "<< probability<<", cursedwords: "<< cursedwords<<"\n";
-        return true; 
-    } 
-    else{
-        std::cout<<" FALSE probability: "<< probability<<", cursedwords: "<< cursedwords<<"\n";
-        return false;
-    }
+double CursedWordsClassificator::check() {
+    return ptr_client_->ClassifyMessage(message_);
 }

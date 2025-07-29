@@ -20,7 +20,7 @@ ptr_bot_(std::move(ptr_bot)), queue_(queue), ptr_factory_(std::move(ptr_factory)
         if (!queue_->push(std::make_unique<CursedWordDetectingTask>(
             
             std::make_shared<CursedWordsClassificator>(std::move(toxicity_client_), message->text),
-            std::make_shared<CursedWordsReactor>(ptr_bot_, message->text, message->chat->id, message->messageId)
+            std::make_shared<CursedWordsReactor>(ptr_bot_, std::move(message->text), message->chat->id, message->messageId)
         
         ))){
             Logger::getInstance().logInfo(Logger::Levels::Critical, "Queue is full!"); 
