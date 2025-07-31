@@ -5,7 +5,7 @@ SimpleClassificator::SimpleClassificator(const std::string& message): message_(m
 }
 
 double SimpleClassificator::check(){
-    return 0.8;
+    return 1.0;
 }
 
 CursedWordsClassificator::CursedWordsClassificator(std::unique_ptr<IClassifierClient> ptr_client, const std::string& message):
@@ -14,6 +14,5 @@ CursedWordsClassificator::CursedWordsClassificator(std::unique_ptr<IClassifierCl
 }
 
 double CursedWordsClassificator::check() {
-    double probility = ptr_client_->ClassifyMessage(message_);
-    return probility;
+    return ptr_client_->ClassifyMessage(message_);
 }

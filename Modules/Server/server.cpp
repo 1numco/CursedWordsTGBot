@@ -2,7 +2,7 @@
 
 
 Server::Server(std::unique_ptr<TgBot::Bot> ptr_bot, std::shared_ptr<Queue<ITask>> queue, std::unique_ptr<IClassifierFactory> ptr_factory): 
-ptr_bot_(std::move(ptr_bot)), queue_(queue), ptr_factory_(std::move(ptr_factory)) {
+ptr_bot_(std::move(ptr_bot)), queue_(std::move(queue)), ptr_factory_(std::move(ptr_factory)) {
 
     ptr_bot_->getEvents().onCommand("start", [&](TgBot::Message::Ptr message) {
         ptr_bot_->getApi().sendMessage(message->chat->id, "Hi!");

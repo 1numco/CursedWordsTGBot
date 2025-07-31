@@ -1,12 +1,13 @@
 #include "checker.hpp"
 
 void Checker::TearDown() {
-    // Очистка ресурсов при необходимости
+
 }
 
 void Checker::SetUp() {
     const char* token_of_checker = std::getenv("TELEGRAM_TOKEN_CHECKER");
-
+    const char* chat_id_value = std::getenv("CHAT_ID");
+    chat_id_ = std::stoll(chat_id_value);
     t_bot_checker = std::make_shared<TgBot::Bot>(token_of_checker);
     count_recieve_messages = 0;
     fill_map();

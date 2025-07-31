@@ -6,8 +6,7 @@
 
 int main() {
     
-    const char* token_of_generator = std::getenv("TELEGRAM_TOKEN_GENERATOR");
-    Generator generator(token_of_generator);
+    Generator generator;
     generator.generator();
 
     return 0;

@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <tgbot/tgbot.h>
 #include <fstream>
+#include <string>
 #include <atomic>
 #include <map>
 #include "logger.hpp"
@@ -12,10 +13,9 @@ protected:
     void fill_map();
     void run_checker();
     void message_handler(TgBot::Message::Ptr message);
-
+    std::int64_t chat_id_;
     std::atomic<size_t> count_recieve_messages{0};
     std::shared_ptr<TgBot::Bot> t_bot_checker;
-    static inline std::int64_t chat_id_ = -1002432345513;
     static inline const size_t limit_sent_messages_ = 5;
     static inline const size_t limit_time_in_sec = 8;
     std::map<std::string, bool> message_container;

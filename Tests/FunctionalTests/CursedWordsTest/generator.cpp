@@ -1,11 +1,12 @@
 #include "generator.hpp"
 
 
-Generator::Generator(std::string token): token_(token){
-
-        t_bot = std::make_shared<TgBot::Bot>(token_);
-        count_recieve_messages = 0;
-        chat_id_ = -1002432345513;
+Generator::Generator(){
+    const char* token_of_generator_ = std::getenv("TELEGRAM_TOKEN_GENERATOR");
+    t_bot = std::make_shared<TgBot::Bot>(token_of_generator_);
+    count_recieve_messages = 0;
+    const char* chat_id_value = std::getenv("CHAT_ID");
+    chat_id_ = std::stoll(chat_id_value);
 }
 
 void Generator::generator() {

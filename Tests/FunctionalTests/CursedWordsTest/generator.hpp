@@ -18,6 +18,7 @@
 #include <chrono>
 #include <pthread.h>
 #include <csignal>
+#include <string>
 
 struct Message {
     std::int32_t  messageId_;
@@ -29,7 +30,7 @@ struct Message {
 class Generator{
 
 public:
-    Generator(std::string token);
+    Generator();
     void generator();
 
 private:
@@ -40,7 +41,5 @@ private:
     const size_t limit_time_in_sec = 8;
     std::map<std::string, bool> message_container;
     std::mutex set_mutex;
-
     const inline static std::string filePath_ = "./bins/Tests/FunctionalTests/messages.txt";
-    std::string token_;
 };

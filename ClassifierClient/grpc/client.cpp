@@ -1,7 +1,7 @@
 #include "client.hpp"
 
 
-ToxicityClassifierClient::ToxicityClassifierClient(std::shared_ptr<Channel> channel) : stub_(ToxicityClassifier::NewStub(channel)) {
+ToxicityClassifierClient::ToxicityClassifierClient(std::shared_ptr<Channel> channel) : stub_(ToxicityClassifier::NewStub(std::move(channel))) {
   
 }
 
@@ -15,9 +15,9 @@ double ToxicityClassifierClient::ClassifyMessage(const std::string& message) {
     Status status = stub_->ClassifyMessage(&context, request, &response);
 
     if (status.ok()) {
-      return response.toxicity_probability();
+        return response.toxicity_probability();
     } else {
-      throw std::runtime_error("RPC failed: " + status.error_message());
+        throw std::runtime_error("RPC failed: " + status.error_message());
     }
 }
 
@@ -31,5 +31,5 @@ ToxicityClassifierClientFactory::ToxicityClassifierClientFactory() {
 }
 
 std::unique_ptr<IClassifierClient> ToxicityClassifierClientFactory::Create() {
-  return std::make_unique<ToxicityClassifierClient>(channel_);
+    return std::make_unique<ToxicityClassifierClient>(channel_);
 }

@@ -17,7 +17,6 @@
 #include "worker.hpp"
 #include "client.hpp"
 #include "signalhandler.hpp"
-#include <grpcpp/grpcpp.h>
 
 void run_bot(std::string token){
     std::unique_ptr<TgBot::Bot> ptr_bot = std::make_unique<TgBot::Bot>(token);

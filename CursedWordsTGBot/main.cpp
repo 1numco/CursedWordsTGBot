@@ -16,7 +16,6 @@
 #include "server.hpp"
 #include "worker.hpp"
 #include "signalhandler.hpp"
-#include <grpcpp/grpcpp.h>
 
 std::string get_arguments_string(size_t argc, char**argv){
     std::vector<std::string> arguments_command_line;

@@ -46,6 +46,7 @@ services:
     environment:
       - TELEGRAM_TOKEN_GENERATOR=${TELEGRAM_TOKEN_GENERATOR}
       - GRPC_SERVER_ADDRESS=grpc_server:50051
+      - CHAT_ID=${CHAT_ID}
       - MESSAGES_FILE_PATH=./bins/Tests/FunctionalTests/messages.txt
       - SOURCE_DIR=${SOURCE_DIR}
     networks:
@@ -62,6 +63,7 @@ services:
     environment:
       - TELEGRAM_TOKEN_CHECKER=${TELEGRAM_TOKEN_CHECKER}
       - GRPC_SERVER_ADDRESS=grpc_server:50051
+      - CHAT_ID=${CHAT_ID}
       - MESSAGES_FILE_PATH=./bins/Tests/FunctionalTests/messages.txt
       - SOURCE_DIR=${SOURCE_DIR}
     networks:
