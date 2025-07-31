@@ -13,7 +13,7 @@ protected:
     void fill_map();
     void run_checker();
     void message_handler(TgBot::Message::Ptr message);
-    std::int64_t chat_id_;
+    static inline std::int64_t chat_id_;
     std::atomic<size_t> count_recieve_messages{0};
     std::shared_ptr<TgBot::Bot> t_bot_checker;
     static inline const size_t limit_sent_messages_ = 5;

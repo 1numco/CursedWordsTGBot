@@ -3,13 +3,13 @@ syntax = "proto3";
 package toxicity_classifier;
 
 service ToxicityClassifier {
-  rpc ClassifyMessage (MessageRequest) returns (MessageResponse) {}
+    rpc ClassifyMessage (MessageRequest) returns (MessageResponse) {}
 }
 
 message MessageRequest {
-  string message = 1;
+    string message = 1;
 }
 
 message MessageResponse {
-  double toxicity_probability = 1;
+    double toxicity_probability = 1;
 }
