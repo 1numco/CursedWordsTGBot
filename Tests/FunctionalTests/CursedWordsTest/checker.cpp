@@ -61,7 +61,7 @@ void Checker::message_handler(TgBot::Message::Ptr message) {
     bool actual_reaction = (message->text == "мат");
     bool expected_reaction = it->second;
     
-    Logger::getInstance().logInfo(Logger::Levels::Info, "\nПроверка сообщения: " + original_text + 
+    Logger::getInstance().logInfo(Logger::Levels::Info, "\n| Проверка сообщения: " + original_text + 
     "\n| Ожидалось: " + (expected_reaction == 1 ? "Мат": "Не мат") + 
     "\n| Фактически: " + (actual_reaction == 1 ? "Мат": "Не мат"));
 
