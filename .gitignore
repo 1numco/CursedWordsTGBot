@@ -7,7 +7,7 @@ token.txt
 commands_docker.txt
 update-tgbot-version.patch
 .vscode/
-
+/ServerGrpc/__pycache__
 /ClassifierClient/grpc/toxicity_classifier.pb*
 /ClassifierClient/grpc/toxicity_classifier.grpc*
 /ServerGrpc/toxicity_classifier_pb2*
