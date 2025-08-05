@@ -19,17 +19,17 @@
 #include "signalhandler.hpp"
 
 void run_bot(std::string token){
-    std::unique_ptr<TgBot::Bot> ptr_bot = std::make_unique<TgBot::Bot>(token);
+    std::unique_ptr<TgBot::Bot> bot_ = std::make_unique<TgBot::Bot>(token);
     
-    Logger::getInstance().setName(ptr_bot->getApi().getMe()->username);
+    Logger::getInstance().setName(bot_->getApi().getMe()->username);
     Logger::getInstance().setLevel(Logger::Levels::Debug);
 
-    auto ptr_queue = std::make_shared<Queue<ITask>> ();
+    auto queue_ = std::make_shared<Queue<ITask>> ();
     
 
-    Server server(std::move(ptr_bot), ptr_queue, std::make_unique<ToxicityClassifierClientFactory>());
+    Server server(std::move(bot_), queue_, std::make_unique<ToxicityClassifierClientFactory>());
 
-    Worker worker(ptr_queue);
+    Worker worker(queue_);
 
     SignalHandler handler({ SIGINT, SIGTERM }, [&](){
             static int count = 0;

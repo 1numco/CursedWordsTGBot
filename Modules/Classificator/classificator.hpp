@@ -32,11 +32,11 @@ private:
 
 class CursedWordsClassificator: public IClassificator{
 public:
-    CursedWordsClassificator( std::unique_ptr<IClassifierClient> ptr_client, const std::string& message);
+    CursedWordsClassificator( std::unique_ptr<IClassifierClient> client, const std::string& message);
     virtual double check() override;
     ~CursedWordsClassificator() = default; 
 private:
-    std::unique_ptr<IClassifierClient> ptr_client_;
+    std::unique_ptr<IClassifierClient> client_;
     std::string message_;
 };
 

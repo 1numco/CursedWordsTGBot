@@ -22,7 +22,7 @@ class ITask;
 
 class Server{
 public:
-    Server(std::unique_ptr<TgBot::Bot> ptr_bot, std::shared_ptr<Queue<ITask>> queue, std::unique_ptr<IClassifierFactory> ptr_factory);
+    Server(std::unique_ptr<TgBot::Bot> bot_, std::shared_ptr<Queue<ITask>> queue, std::unique_ptr<IClassifierFactory> ptr_factory);
     void start();
     void terminate();
     ~Server();
