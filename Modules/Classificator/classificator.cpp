@@ -4,10 +4,15 @@ SimpleClassificator::SimpleClassificator(const std::string& message): message_(m
 
 }
 
-bool SimpleClassificator::check(){
-    return true;
+double SimpleClassificator::check(){
+    return 1.0;
 }
 
-SimpleClassificator::~SimpleClassificator(){
+CursedWordsClassificator::CursedWordsClassificator(std::unique_ptr<IClassifierClient> client, const std::string& message):
+ client_(std::move(client)), message_(message){
 
+}
+
+double CursedWordsClassificator::check() {
+    return client_->ClassifyMessage(message_);
 }

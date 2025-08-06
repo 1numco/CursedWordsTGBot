@@ -2,5 +2,12 @@ bot_workspace.code-workspace
 token.txt
 /build/
 /bins/
+/Testing/
+/docker_cache/
+commands_docker.txt
 update-tgbot-version.patch
-
+.vscode/
+/ServerGrpc/__pycache__
+/ClassifierClient/grpc/toxicity_classifier.pb*
+/ClassifierClient/grpc/toxicity_classifier.grpc*
+/ServerGrpc/toxicity_classifier_pb2*

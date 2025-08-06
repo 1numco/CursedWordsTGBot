@@ -26,7 +26,7 @@ std::string get_arguments_string(size_t argc, char**argv){
 }
 
 int main(int argc, char *argv[]) {
-    
+
     try{
         std::string token = get_arguments_string(argc, argv);
         Parser parser{{"-token"}};
@@ -39,6 +39,6 @@ int main(int argc, char *argv[]) {
         Logger::getInstance().logInfo(Logger::Levels::Info, ex.what());
         std::exit(EXIT_FAILURE);
     }
-
+        
     return 0;
 };

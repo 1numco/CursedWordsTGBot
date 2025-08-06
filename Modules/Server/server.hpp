@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdlib>
+#include <stdio.h> 
 #include <deque>
 #include <string>
 #include <stdio.h>
@@ -15,12 +16,13 @@
 #include "logger.hpp"
 #include "classificator.hpp"
 #include "reactor.hpp"
+#include "client.hpp"
 
 class ITask;
 
 class Server{
 public:
-    Server(std::unique_ptr<TgBot::Bot> ptr_bot, std::shared_ptr<Queue<ITask>> queue);
+    Server(std::unique_ptr<TgBot::Bot> bot_, std::shared_ptr<Queue<ITask>> queue, std::unique_ptr<IClassifierFactory> ptr_factory);
     void start();
     void terminate();
     ~Server();
@@ -28,5 +30,6 @@ public:
 private:
     std::shared_ptr<TgBot::Bot> ptr_bot_;
     std::shared_ptr<Queue<ITask>> queue_;
+    std::unique_ptr<IClassifierFactory> classifier_factory_;
     std::atomic<bool> shutdown_requested{false};
 };

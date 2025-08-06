@@ -18,5 +18,5 @@ void SignalHandler::invoke(int signal_){
 }
 
 SignalHandler::~SignalHandler(){
-    handler_ptr = nullptr; 
+    handler_ptr = nullptr;
 }
