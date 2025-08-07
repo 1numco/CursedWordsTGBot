@@ -8,26 +8,36 @@ void QueueTest::TearDown() {
 
 }
 
-TEST_F(QueueTest, LimitedSizeOfQueue) {
-    const int size_of_queue = 77;
-    Queue<TestTask> queue_(size_of_queue);
-    
-    const int size_words = 5;
-    const int size_operations = 2000;
-    int pushCount{0};  // Счётчик количества успешных вставок
-    for (int i = 0; i < size_operations; ++i) {
-        auto message = generated_words(size_words);
-        auto name = generated_words(size_words);
-        auto task = std::make_unique<TestTask>(message, name);
-        if((queue_.push(std::move(task))))
-            pushCount++;       
-    }
-    ASSERT_EQ(pushCount, size_of_queue);
-}
+TEST_F(QueueTest, PushBlocksWhenQueueIsFullAndUnblocksAfterTake) {
+  const int size_of_queue = 10;
+  Queue<TestTask> queue_(size_of_queue);
 
-TEST_F(QueueTest, NewQueueFront) {
-    auto task = queue.take();
-    EXPECT_FALSE(task);
+  // Заполняем очередь до предела
+  for (int i = 0; i < size_of_queue; ++i) {
+      auto task = std::make_unique<TestTask>("message_" + std::to_string(i), "name_" + std::to_string(i));
+      ASSERT_TRUE(queue_.push(std::move(task)));
+  }
+
+  // Поток, который попытается вставить ещё один элемент — должен заблокироваться
+  std::atomic<bool> push_finished{false};
+  std::thread pushing_thread([&]() {
+      auto extra_task = std::make_unique<TestTask>("extra", "task");
+      queue_.push(std::move(extra_task));  // должен блокироваться
+      push_finished = true;
+  });
+
+  // Даём потоку время попытаться вставить (он должен заблокироваться)
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  EXPECT_FALSE(push_finished.load()) << "Push не должен был завершиться — очередь полная";
+
+  // Достаём один элемент, чтобы разблокировать push
+  auto taken = queue_.take();
+  ASSERT_TRUE(taken != nullptr);
+  EXPECT_TRUE(taken->message_.rfind("message_", 0) == 0);  // Проверяем, что взят обычный, не "extra"
+
+  // Ожидаем завершения потока
+  pushing_thread.join();
+  EXPECT_TRUE(push_finished.load()) << "Push должен завершиться после освобождения места";
 }
 
 TEST_F(QueueTest, Front) {

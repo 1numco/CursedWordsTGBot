@@ -40,7 +40,7 @@ struct std::hash<TestTask>
     }
 };
 
-class ThreadSafeQueueTest : public ::testing::Test{
+class ThreadSafeQueueTest : public ::testing::Test{ 
 
 protected:
     void SetUp() override;
