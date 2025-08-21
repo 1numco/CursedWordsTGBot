@@ -72,7 +72,6 @@ void Checker::message_handler(TgBot::Message::Ptr message) {
     "\n| Expected: " + (expected_reaction == 1 ? "Мат": "Не мат") + 
     "\n| Actual: " + (actual_reaction == 1 ? "Мат": "Не мат"));
 
-    
     ASSERT_EQ(expected_reaction, actual_reaction);
     
     count_recieve_messages++;
