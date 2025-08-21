@@ -33,18 +33,17 @@ TEST_F(ThreadSafeQueueTest, SingleThreadedPushTakeTest) {
             }
             bool pushed = queue_.push(std::move(task));
             if (!pushed) {
-                break; // Очередь закрыта, прекращаем добавление
+                break;
             }
         }
-        queue_.shutdown(); // Сигнал потребителю
+        queue_.shutdown(); 
     };
     
     auto takeTask = [&]() {
         while (true) {
             auto task_ptr = queue_.take();
-            if (!task_ptr) break; // Выход при shutdown
+            if (!task_ptr) break;
             
-            //std::unique_lock lock(set_mutex);
             {
                 std::lock_guard<std::mutex> lck{set_mutex};
                 takeCount++;
@@ -63,45 +62,32 @@ TEST_F(ThreadSafeQueueTest, SingleThreadedPushTakeTest) {
 
     ASSERT_TRUE(t_set.empty());
 }
-
-TEST_F(ThreadSafeQueueTest, LimitedSizeOfQueue) {
-    const int size_of_queue = 50;
+TEST_F(ThreadSafeQueueTest, PushBlocksWhenQueueIsFullAndUnblocksAfterTake) {
+    const int size_of_queue = 10;
     Queue<TestTask> queue_(size_of_queue);
-    const int size_words = 5;
-    const int size_operations = 1000;
 
-    auto pushTask = [&]() {
-        for (int i = 0; i < size_operations; i++) {
-            auto message = generated_words(size_words);
-            auto name = generated_words(size_words);
-            auto task = std::make_unique<TestTask>(message, name);
-            
-            // Пытаемся добавить задачу. Если очередь закрыта, выходим.
-            if (!queue_.push(std::move(task))) {
-                break;
-            }
-        }
-    };
-
-    // Запускаем три потока-производителя
-    std::jthread pushThreads_one(pushTask);
-    std::jthread pushThreads_two(pushTask);
-    std::jthread pushThreads_three(pushTask);
-    
-    // Потоки автоматически останавливаются при разрушении jthread
-
-
-    // Закрываем очередь, чтобы take() не блокировался
-    queue_.shutdown();
-
-    // Подсчитываем оставшиеся задачи в очереди
-    int count = 0;
-    while (auto task = queue_.take()) {
-        ++count;
+    for (int i = 0; i < size_of_queue; ++i) {
+        auto task = std::make_unique<TestTask>("message_" + std::to_string(i), "name_" + std::to_string(i));
+        ASSERT_TRUE(queue_.push(std::move(task)));
     }
 
-    // Проверяем, что количество не превысило лимит
-    ASSERT_LE(count, size_of_queue) << "Queue exceeded the limit!";
+    std::atomic<bool> push_finished{false};
+    std::thread pushing_thread([&]() {
+        auto extra_task = std::make_unique<TestTask>("extra", "task");
+        queue_.push(std::move(extra_task)); 
+        push_finished = true;
+    });
+
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    EXPECT_FALSE(push_finished.load()) << "Push не должен был завершиться — очередь полная";
+
+    auto taken = queue_.take();
+    ASSERT_TRUE(taken != nullptr);
+    EXPECT_TRUE(taken->message_.rfind("message_", 0) == 0);
+
+    pushing_thread.join();
+    EXPECT_TRUE(push_finished.load()) << "Push должен завершиться после освобождения места";
 }
 
 TEST_F(ThreadSafeQueueTest, FullTest) {
@@ -135,7 +121,7 @@ TEST_F(ThreadSafeQueueTest, FullTest) {
     auto takeTask = [&]() {
         for (int i = 0; i < size_operations;) {
             auto task_ptr = queue_.take(); 
-            if (!task_ptr) continue; // Пропускаем nullptr
+            if (!task_ptr) continue;
             std::lock_guard<std::mutex> lock(set_mutex);
             takeCount++; i++;
             auto it = t_set.find(*task_ptr);
@@ -150,13 +136,8 @@ TEST_F(ThreadSafeQueueTest, FullTest) {
 
         for (int i = 0; i < numThreads; ++i) {
             pushThreads[i] = std::jthread(pushTask);
-        }
-
-        //queue_.shutdown();
-
-        for (int i = 0; i < numThreads; ++i) {
             takeThreads[i] = std::jthread(takeTask);
-        }    
+        }
     }
 
 

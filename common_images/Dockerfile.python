@@ -22,7 +22,7 @@ COPY docker_cache/huggingface /cache/huggingface
 ENV HF_HOME=/cache/huggingface
 
 # Копируем requirements.txt
-COPY common_images_python/requirements.txt .
+COPY common_images/requirements.txt .
 
 # Устанавливаем зависимости
 RUN pip install --no-cache-dir -r requirements.txt
