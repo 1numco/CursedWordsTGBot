@@ -2,7 +2,7 @@ bot_workspace.code-workspace
 token.txt
 /build/
 /bins/
-/Testing/Temporary
+/Testing/
 /docker_cache/
 commands_docker.txt
 update-tgbot-version.patch

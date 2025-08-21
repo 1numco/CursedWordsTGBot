@@ -15,7 +15,6 @@ TEST_F(QueueTest, SingleElement) {
     EXPECT_EQ(task_ptr->name_, "Vlad");
 }
 
-// Тест FIFO порядка с детерминированными данными
 TEST_F(QueueTest, FIFO_Order) {
     constexpr size_t count = 100;
     std::vector<std::string> messages;
@@ -37,7 +36,6 @@ TEST_F(QueueTest, FIFO_Order) {
     }
 }
 
-// Тест FIFO порядка со случайными данными
 TEST_F(QueueTest, FIFO_WithRandomData) {
     constexpr size_t count = 100;
     constexpr size_t word_size = 10;
@@ -61,11 +59,9 @@ TEST_F(QueueTest, FIFO_WithRandomData) {
     }
 }
 
-// Тест блокировки при переполнении (с локальной очередью)
 TEST_F(QueueTest, PushBlocksWhenFull) {
     constexpr size_t max_size = 10;
     
-    // Создаем локальную очередь вместо использования фикстурной
     Queue<TestTask> small_queue(max_size);
     
     for(size_t i = 0; i < max_size; i++) {

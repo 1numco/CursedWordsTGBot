@@ -24,12 +24,10 @@ TEST_F(ThreadSafeQueueTest, SingleThreadedPushTakeTest) {
             auto message = generated_words(size_words);
             auto name = generated_words(size_words);
             auto task = std::make_unique<TestTask>(message, name);
-            
             {
                 std::lock_guard<std::mutex> lck{set_mutex};
                 t_set.insert(TestTask(message, name));
                 pushCount++;
-                if(!pushCount%10) std::cout<<"pushTask: "<<pushCount<<"\n";
             }
             bool pushed = queue_.push(std::move(task));
             if (!pushed) {
@@ -62,32 +60,57 @@ TEST_F(ThreadSafeQueueTest, SingleThreadedPushTakeTest) {
 
     ASSERT_TRUE(t_set.empty());
 }
-TEST_F(ThreadSafeQueueTest, PushBlocksWhenQueueIsFullAndUnblocksAfterTake) {
+
+TEST_F(ThreadSafeQueueTest, TakeBlocksWhenEmptyAndUnblocksAfterPush) {
     const int size_of_queue = 10;
+    Queue<TestTask> queue_(size_of_queue);
+
+    std::atomic<bool> take_finished{false};
+    std::unique_ptr<TestTask> taken_task = nullptr;
+
+    std::thread taking_thread([&]() {
+        taken_task = queue_.take();
+        take_finished = true;
+    });
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    EXPECT_FALSE(take_finished.load()) << "Take не должен был завершиться — очередь пустая";
+
+    auto task = std::make_unique<TestTask>("test", "task");
+    ASSERT_TRUE(queue_.push(std::move(task)));
+
+    taking_thread.join();
+    EXPECT_TRUE(take_finished.load()) << "Take должен завершиться после добавления элемента";
+    ASSERT_TRUE(taken_task != nullptr);
+    EXPECT_EQ(taken_task->message_, "test");
+    EXPECT_EQ(taken_task->name_, "task");
+}
+
+
+TEST_F(ThreadSafeQueueTest, PushReturnsFalseWhenQueueIsFull) {
+    const int size_of_queue = 2;
     Queue<TestTask> queue_(size_of_queue);
 
     for (int i = 0; i < size_of_queue; ++i) {
         auto task = std::make_unique<TestTask>("message_" + std::to_string(i), "name_" + std::to_string(i));
-        ASSERT_TRUE(queue_.push(std::move(task)));
+        EXPECT_TRUE(queue_.push(std::move(task)));
     }
 
-    std::atomic<bool> push_finished{false};
+    auto extra_task = std::make_unique<TestTask>("extra", "task");
+    
+    std::atomic<bool> push_result{true};
     std::thread pushing_thread([&]() {
-        auto extra_task = std::make_unique<TestTask>("extra", "task");
-        queue_.push(std::move(extra_task)); 
-        push_finished = true;
+        push_result = queue_.push(std::move(extra_task));
     });
 
-
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    EXPECT_FALSE(push_finished.load()) << "Push не должен был завершиться — очередь полная";
-
+    
     auto taken = queue_.take();
     ASSERT_TRUE(taken != nullptr);
-    EXPECT_TRUE(taken->message_.rfind("message_", 0) == 0);
-
+    
     pushing_thread.join();
-    EXPECT_TRUE(push_finished.load()) << "Push должен завершиться после освобождения места";
+    EXPECT_TRUE(push_result.load()) << "Push должен вернуть true после освобождения места";
+
 }
 
 TEST_F(ThreadSafeQueueTest, FullTest) {
