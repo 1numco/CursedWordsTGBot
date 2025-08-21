@@ -140,7 +140,6 @@ TEST_F(ThreadSafeQueueTest, FullTest) {
         }
     }
 
-
     ASSERT_EQ(pushCount, takeCount);
     ASSERT_EQ(t_set.size(), 0);
 }
