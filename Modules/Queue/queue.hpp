@@ -37,7 +37,6 @@ void Queue<Type>::shutdown() {
     cv_full_.notify_all();
 }
 
-
 template <class Type>
 bool Queue<Type>::push(std::unique_ptr<Type> task) {
     if (shutdown_)[[unlikely]]  {

@@ -86,7 +86,6 @@ TEST_F(ThreadSafeQueueTest, TakeBlocksWhenEmptyAndUnblocksAfterPush) {
     EXPECT_EQ(taken_task->name_, "task");
 }
 
-
 TEST_F(ThreadSafeQueueTest, PushReturnsFalseWhenQueueIsFull) {
     const int size_of_queue = 2;
     Queue<TestTask> queue_(size_of_queue);
