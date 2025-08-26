@@ -1,167 +1,195 @@
-#include "multithreaded_tests.hpp"
+#include <gtest/gtest.h>
+#include <memory>
+#include <string>
+#include <deque>
+#include <thread>
+#include <atomic>
+#include <unordered_set>
+#include <mutex>
+#include "task.hpp"
+#include "queue.hpp"
+#include <experimental/random>
 
-void ThreadSafeQueueTest::SetUp() {
-
+inline std::string generated_words(size_t size) {
+    std::string word;
+    word.reserve(size);
+    for(size_t i = 0; i < size; i++) {
+        char ch = std::experimental::randint(65, 122);
+        word += ch;
+    }
+    return word;
 }
 
-void ThreadSafeQueueTest::TearDown() {
-
-}
-
-TEST_F(ThreadSafeQueueTest, SingleThreadedPushTakeTest) {
-    const int size_of_queue = 100;
-    Queue<TestTask> queue_(size_of_queue);
+struct TestTask {
+    std::string message_;
+    std::string name_;
+    TestTask(std::string message, std::string name) 
+        : message_(std::move(message)), name_(std::move(name)) {}
     
-    const int size_words = 5;
-    const int size_operations = 1000;
-    std::atomic<int> pushCount{0};
-    std::atomic<int> takeCount{0};
-    std::mutex set_mutex;
-    std::unordered_set<TestTask> t_set;
-    
-    auto pushTask = [&]() {
-        for (int i = 0; i < size_operations; ++i) {
-            auto message = generated_words(size_words);
-            auto name = generated_words(size_words);
-            auto task = std::make_unique<TestTask>(message, name);
-            {
-                std::lock_guard<std::mutex> lck{set_mutex};
-                t_set.insert(TestTask(message, name));
-                pushCount++;
-            }
-            bool pushed = queue_.push(std::move(task));
-            if (!pushed) {
-                break;
-            }
+    bool operator==(const TestTask& other) const {
+        return message_ == other.message_ && name_ == other.name_;
+    }
+};
+
+namespace std {
+    template<>
+    struct hash<TestTask> {
+        size_t operator()(const TestTask& task) const {
+            return hash<string>()(task.message_) ^ hash<string>()(task.name_);
         }
-        queue_.shutdown(); 
+    };
+}
+
+class ThreadSafeQueueTest : public ::testing::Test {
+protected:
+    Queue<TestTask> queue;
+};
+
+TEST_F(ThreadSafeQueueTest, MultiThreadedPushTake) {
+
+    constexpr size_t num_operations = 1000;
+    constexpr size_t word_size = 5;
+    
+    std::atomic<int> push_count{0};
+    std::atomic<int> take_count{0};
+    std::mutex set_mutex;
+    std::unordered_set<TestTask> task_set;
+    
+    auto producer = [&]() {
+        for (size_t i = 0; i < num_operations; ++i) {
+            auto message = generated_words(word_size);
+            auto name = generated_words(word_size);
+            {
+                std::lock_guard<std::mutex> lock(set_mutex);
+                task_set.insert(TestTask(message, name));
+                push_count++;
+            }
+            queue.push(std::make_unique<TestTask>(message, name));
+        }
+        queue.shutdown();
     };
     
-    auto takeTask = [&]() {
+    auto consumer = [&]() {
         while (true) {
-            auto task_ptr = queue_.take();
+            auto task_ptr = queue.take();
             if (!task_ptr) break;
             
             {
-                std::lock_guard<std::mutex> lck{set_mutex};
-                takeCount++;
-                ASSERT_TRUE(t_set.erase(*task_ptr));
+                std::lock_guard<std::mutex> lock(set_mutex);
+                take_count++;
+                ASSERT_TRUE(task_set.erase(*task_ptr));
             }
         }
     };
     
-    std::thread producer(pushTask);
-    std::thread consumer(takeTask);
+    std::thread producer_thread(producer);
+    std::thread consumer_thread(consumer);
 
-    producer.join();
-    consumer.join();
+    producer_thread.join();
+    consumer_thread.join();
 
-    ASSERT_EQ(pushCount, takeCount);
-
-    ASSERT_TRUE(t_set.empty());
+    ASSERT_EQ(push_count, take_count);
+    ASSERT_TRUE(task_set.empty());
 }
 
-TEST_F(ThreadSafeQueueTest, TakeBlocksWhenEmptyAndUnblocksAfterPush) {
-    const int size_of_queue = 10;
-    Queue<TestTask> queue_(size_of_queue);
+TEST_F(ThreadSafeQueueTest, BlockingPreperty) {
 
-    std::atomic<bool> take_finished{false};
+    std::atomic<bool> take_completed{false};
     std::unique_ptr<TestTask> taken_task = nullptr;
 
-    std::thread taking_thread([&]() {
-        taken_task = queue_.take();
-        take_finished = true;
+    std::thread consumer_thread([&]() {
+        taken_task = queue.take();
+        take_completed = true;
     });
 
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    EXPECT_FALSE(take_finished.load()) << "Take не должен был завершиться — очередь пустая";
+    EXPECT_FALSE(take_completed.load());
 
-    auto task = std::make_unique<TestTask>("test", "task");
-    ASSERT_TRUE(queue_.push(std::move(task)));
+    queue.push(std::make_unique<TestTask>("test", "task"));
 
-    taking_thread.join();
-    EXPECT_TRUE(take_finished.load()) << "Take должен завершиться после добавления элемента";
-    ASSERT_TRUE(taken_task != nullptr);
+    consumer_thread.join();
+    EXPECT_TRUE(take_completed.load());
+    ASSERT_NE(taken_task, nullptr);
     EXPECT_EQ(taken_task->message_, "test");
     EXPECT_EQ(taken_task->name_, "task");
 }
 
-TEST_F(ThreadSafeQueueTest, PushReturnsFalseWhenQueueIsFull) {
-    const int size_of_queue = 2;
-    Queue<TestTask> queue_(size_of_queue);
 
-    for (int i = 0; i < size_of_queue; ++i) {
-        auto task = std::make_unique<TestTask>("message_" + std::to_string(i), "name_" + std::to_string(i));
-        EXPECT_TRUE(queue_.push(std::move(task)));
+TEST_F(ThreadSafeQueueTest, PushBlocksWhenFullAndUnblocksAfterTake) {
+    constexpr size_t queue_size = 100;
+    for (size_t i = 0; i < queue_size; ++i) {
+        queue.push(std::make_unique<TestTask>(
+            "message_" + std::to_string(i), 
+            "name_" + std::to_string(i)
+        ));
     }
 
-    auto extra_task = std::make_unique<TestTask>("extra", "task");
+    std::atomic<bool> push_completed{false};
     
-    std::atomic<bool> push_result{true};
-    std::thread pushing_thread([&]() {
-        push_result = queue_.push(std::move(extra_task));
+    std::thread producer_thread([&]() {
+        queue.push(std::make_unique<TestTask>("extra", "task"));
+        push_completed = true;
     });
 
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    
-    auto taken = queue_.take();
-    ASSERT_TRUE(taken != nullptr);
-    
-    pushing_thread.join();
-    EXPECT_TRUE(push_result.load()) << "Push должен вернуть true после освобождения места";
+    EXPECT_FALSE(push_completed.load());
 
+    auto task = queue.take();
+    ASSERT_NE(task, nullptr);
+
+    producer_thread.join();
+    EXPECT_TRUE(push_completed.load());
 }
 
-TEST_F(ThreadSafeQueueTest, FullTest) {
-    const int size_of_queue = 77;
-    Queue<TestTask> queue_(size_of_queue);
-    const int size_words = 10;
-    const int size_operations = 200;
-    const int numThreads = 10;
-    std::atomic<int> pushCount{0};
-    std::atomic<int> takeCount{0};
+TEST_F(ThreadSafeQueueTest, ComplexMultiThreadedScenario) {
+    constexpr size_t word_size = 10;
+    constexpr size_t operations_per_thread = 200;
+    constexpr size_t num_threads = 10;
+    
+    std::atomic<int> push_count{0};
+    std::atomic<int> take_count{0};
     std::mutex set_mutex;
-    std::unordered_set<TestTask> t_set;
+    std::unordered_set<TestTask> task_set;
 
-    auto pushTask = [&]() {
-        for (int i = 0; i < size_operations;) {
-            auto message = generated_words(size_words);
-            auto name = generated_words(size_words);
-
+    auto producer = [&]() {
+        for (size_t i = 0; i < operations_per_thread; i++) {
+            auto message = generated_words(word_size);
+            auto name = generated_words(word_size);
+            
             {
-                std::lock_guard<std::mutex> lock{set_mutex};
-                t_set.insert({message, name});
+                std::lock_guard<std::mutex> lock(set_mutex);
+                task_set.insert(TestTask(message, name));
             }
-
-            auto task = std::make_unique<TestTask>(message, name);
-            if (queue_.push(std::move(task))) {
-                ++i;
-                pushCount++;
-            }       
+            
+            queue.push(std::make_unique<TestTask>(message, name));
+            push_count++;
         }
     };
-    auto takeTask = [&]() {
-        for (int i = 0; i < size_operations;) {
-            auto task_ptr = queue_.take(); 
-            if (!task_ptr) continue;
-            std::lock_guard<std::mutex> lock(set_mutex);
-            takeCount++; i++;
-            auto it = t_set.find(*task_ptr);
-            ASSERT_NE(it, t_set.end()) << "Task not found!";
-     
-            t_set.erase(it);
+
+    auto consumer = [&]() {
+        for (size_t i = 0; i < operations_per_thread; i++) {
+            auto task = queue.take();
+            ASSERT_NE(task, nullptr);
+            
+            {
+                std::lock_guard<std::mutex> lock(set_mutex);
+                take_count++;
+                ASSERT_TRUE(task_set.erase(*task));
+            }
         }
     };
-    {
-        std::jthread pushThreads[numThreads];
-        std::jthread takeThreads[numThreads];
 
-        for (int i = 0; i < numThreads; ++i) {
-            pushThreads[i] = std::jthread(pushTask);
-            takeThreads[i] = std::jthread(takeTask);
-        }
+    std::vector<std::thread> producers;
+    std::vector<std::thread> consumers;
+    
+    for (size_t i = 0; i < num_threads; ++i) {
+        producers.emplace_back(producer);
+        consumers.emplace_back(consumer);
     }
 
-    ASSERT_EQ(pushCount, takeCount);
-    ASSERT_EQ(t_set.size(), 0);
+    for (auto& thread : producers) thread.join();
+    for (auto& thread : consumers) thread.join();
+
+    ASSERT_EQ(push_count, take_count);
+    ASSERT_TRUE(task_set.empty());
 }

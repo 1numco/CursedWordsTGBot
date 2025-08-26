@@ -1,12 +1,39 @@
-#include "singlethreaded_tests.hpp"
+#include <gtest/gtest.h>
+#include <memory>
+#include <string>
+#include <deque>
+#include <thread>
+#include <atomic>
+#include "task.hpp"
+#include "queue.hpp"
+#include <experimental/random>
 
-void QueueTest::SetUp() {
-
+inline std::string generated_words(size_t size) {
+    std::string word;
+    word.reserve(size);
+    for(size_t i = 0; i < size; i++) {
+        char ch = std::experimental::randint(65, 122);
+        word += ch;
+    }
+    return word;
 }
 
-void QueueTest::TearDown() {
+struct TestTask {
+    std::string message_;
+    std::string name_;
+    TestTask(std::string message, std::string name) 
+        : message_(std::move(message)), name_(std::move(name)) {}
+    
+    bool operator==(const TestTask& other) const {
+        return message_ == other.message_ && name_ == other.name_;
+    }
+};
 
-}
+class QueueTest : public ::testing::Test {
+protected:
+    Queue<TestTask> queue;
+};
+
 
 TEST_F(QueueTest, SingleElement) {
     queue.push(std::make_unique<TestTask>("Hello", "Vlad"));
@@ -17,74 +44,22 @@ TEST_F(QueueTest, SingleElement) {
 
 TEST_F(QueueTest, FIFO_Order) {
     constexpr size_t count = 100;
-    std::vector<std::string> messages;
-    std::vector<std::string> names;
     
     for(size_t i = 0; i < count; i++) {
-        messages.push_back("Msg" + std::to_string(i));
-        names.push_back("Name" + std::to_string(i));
-    }
-    
-    for(size_t i = 0; i < count; i++) {
-        queue.push(std::make_unique<TestTask>(messages[i], names[i]));
+        queue.push(std::make_unique<TestTask>(
+            "Msg" + std::to_string(i), 
+            "Name" + std::to_string(i)
+        ));
     }
     
     for(size_t i = 0; i < count; i++) {
         auto task_ptr = queue.take();
-        EXPECT_EQ(task_ptr->message_, messages[i]);
-        EXPECT_EQ(task_ptr->name_, names[i]);
+        EXPECT_EQ(task_ptr->message_, "Msg" + std::to_string(i));
+        EXPECT_EQ(task_ptr->name_, "Name" + std::to_string(i));
     }
 }
 
-TEST_F(QueueTest, FIFO_WithRandomData) {
-    constexpr size_t count = 100;
-    constexpr size_t word_size = 10;
-    
-    std::vector<std::string> messages;
-    std::vector<std::string> names;
-    
-    for(size_t i = 0; i < count; i++) {
-        messages.push_back(generated_words(word_size));
-        names.push_back(generated_words(word_size));
-    }
-    
-    for(size_t i = 0; i < count; i++) {
-        queue.push(std::make_unique<TestTask>(messages[i], names[i]));
-    }
-    
-    for(size_t i = 0; i < count; i++) {
-        auto task_ptr = queue.take();
-        EXPECT_EQ(task_ptr->message_, messages[i]);
-        EXPECT_EQ(task_ptr->name_, names[i]);
-    }
-}
-
-TEST_F(QueueTest, PushBlocksWhenFull) {
-    constexpr size_t max_size = 10;
-    
-    Queue<TestTask> small_queue(max_size);
-    
-    for(size_t i = 0; i < max_size; i++) {
-        EXPECT_TRUE(small_queue.push(std::make_unique<TestTask>(
-            generated_words(5), generated_words(5)
-        )));
-    }
-    
-    std::atomic<bool> push_done(false);
-    std::thread push_thread([&] {
-        small_queue.push(std::make_unique<TestTask>("Overflow", "Test"));
-        push_done = true;
-    });
-    
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
-    EXPECT_FALSE(push_done.load());
-    
-    auto task = small_queue.take();
-    push_thread.join();
-    EXPECT_TRUE(push_done.load());
-}
-
-TEST_F(QueueTest, ShutdownBehavior) {
+TEST_F(QueueTest, ShutdownRejectsNewTasksAndAllowsFinishingCurrent) {
     for(int i = 0; i < 5; i++) {
         queue.push(std::make_unique<TestTask>(
             generated_words(5), generated_words(5)

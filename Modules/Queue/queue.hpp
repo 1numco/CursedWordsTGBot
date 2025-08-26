@@ -11,7 +11,7 @@ class Queue {
 
 public:
     Queue(const size_t limit = 100);
-    bool push( std::unique_ptr<Type> task);
+    void push( std::unique_ptr<Type> task);
     std::unique_ptr<Type> take();
     void shutdown();
     ~Queue();
@@ -38,7 +38,7 @@ void Queue<Type>::shutdown() {
 }
 
 template <class Type>
-bool Queue<Type>::push(std::unique_ptr<Type> task) {
+void Queue<Type>::push(std::unique_ptr<Type> task) {
     if (shutdown_)[[unlikely]]  {
         throw std::runtime_error("Queue is shutdown");
     }
@@ -47,7 +47,6 @@ bool Queue<Type>::push(std::unique_ptr<Type> task) {
     deque_.push_back(std::move(task));
     lock.unlock();
     cv_.notify_one();
-    return true;
 }
 
 template <class Type>
