@@ -26,9 +26,7 @@ struct TestTask {
     TestTask(std::string message, std::string name) 
         : message_(std::move(message)), name_(std::move(name)) {}
     
-    bool operator==(const TestTask& other) const {
-        return message_ == other.message_ && name_ == other.name_;
-    }
+    auto operator<=>(const TestTask& other) const  = default;
 };
 
 namespace std {

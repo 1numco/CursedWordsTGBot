@@ -24,9 +24,7 @@ struct TestTask {
     TestTask(std::string message, std::string name) 
         : message_(std::move(message)), name_(std::move(name)) {}
     
-    bool operator==(const TestTask& other) const {
-        return message_ == other.message_ && name_ == other.name_;
-    }
+    auto operator<=>(const TestTask& other) const  = default;
 };
 
 class QueueTest : public ::testing::Test {
@@ -60,9 +58,10 @@ TEST_F(QueueTest, FIFO_Order) {
 }
 
 TEST_F(QueueTest, ShutdownRejectsNewTasksAndAllowsFinishingCurrent) {
-    for(int i = 0; i < 5; i++) {
+    constexpr size_t count = 5;
+    for(size_t i = 0; i < count; i++) {
         queue.push(std::make_unique<TestTask>(
-            generated_words(5), generated_words(5)
+            generated_words(count), generated_words(count)
         ));
     }
     
@@ -73,7 +72,7 @@ TEST_F(QueueTest, ShutdownRejectsNewTasksAndAllowsFinishingCurrent) {
         std::runtime_error
     );
     
-    for(int i = 0; i < 5; i++) {
+    for(size_t i = 0; i < count; i++) {
         auto task = queue.take();
         EXPECT_NE(task, nullptr);
     }
