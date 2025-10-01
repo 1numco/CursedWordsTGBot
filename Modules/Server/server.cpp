@@ -15,15 +15,12 @@ ptr_bot_(std::move(bot_)), queue_(std::move(queue)), classifier_factory_(std::mo
             return;
         }
         
-        if (!queue_->push(std::make_unique<CursedWordDetectingTask>(
+        queue_->push(std::make_unique<CursedWordDetectingTask>(
             
             std::make_shared<CursedWordsClassificator>(std::move(classifier_factory_->Create()), message->text),
             std::make_shared<CursedWordsReactor>(ptr_bot_, message->text, message->chat->id, message->messageId)
         
-        ))){
-            Logger::getInstance().logInfo(Logger::Levels::Critical, "Queue is full!"); 
-            std::this_thread::sleep_for (std::chrono::milliseconds(100));
-        }
+        ));
     });
 }
 
